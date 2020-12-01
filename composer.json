@@ -1,0 +1,6 @@
+{
+    "require": {
+        "php-webdriver/webdriver": "^1.9",
+        "symfony/var-dumper": "^5.2"
+    }
+}
