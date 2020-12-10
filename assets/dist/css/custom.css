@@ -1,0 +1,52 @@
+.p-12 {
+	padding: 12px !important;
+}
+
+.h-info {
+	height: 200px !important;
+}
+
+.pd-full-bd-0 {
+	padding: 3px 113.5px 4px 113px;
+	border-radius: 0px;
+}
+
+.bd-r-0 {
+	border-radius: 0px;
+}
+
+.label-process{
+	display: block !important;
+	text-align: left !important;
+	width: fit-content;
+}
+
+.btn-process {
+	border-radius: 3px;
+    position: relative;
+    text-align: center;
+    color: #666;
+    border: 1px solid #ddd;
+    background-color: #f4f4f4;
+    font-size: 12px;
+}
+
+.m-t-3 {
+	margin-top: 3px;
+}
+
+.min-h-title {
+	min-height: 150px !important;
+}
+
+.min-h-des {
+	min-height: 105px !important;
+}
+
+.min-h-text {
+	min-height: 324px !important;
+}
+
+.d-none {
+	display: none !important;
+}
