@@ -18,7 +18,15 @@ $chromeOptions->addArguments(['--no-sandbox', '--disable-gpu', '--disable-notifi
 $capabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
 
 /*-------------------------------------------Host-----------------------------------------------*/
-$driver = RemoteWebDriver::create($host, $capabilities);
+if($_GET['session'])
+{
+	$driver = RemoteWebDriver::createBySessionID($session, $host);
+	$driver->quit();
+}
+else{
+	$driver = RemoteWebDriver::create($host, $capabilities);
+	$driver->getSessionID();
+}
 
 /*-------------------------------------------URL-----------------------------------------------*/
 $driver->get('https://facebook.com');
