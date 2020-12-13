@@ -9,7 +9,6 @@ use Facebook\WebDriver\WebDriverExpectedCondition;
 
 $host = 'http://localhost:4444';
 $capabilities = DesiredCapabilities::chrome();
-
 /*-------------------------------------------Set input key by language-----------------------------------------------*/
 $input_key = ['en' => array(), 'vn' => array() ];
 $input_key['en']['image'] = 'input[accept^="image"]';
@@ -49,7 +48,7 @@ $response[] = [
 
 $chromeOptions = new ChromeOptions();
 $chromeOptions->addArguments(['--no-sandbox', '--disable-gpu', '--disable-notifications']);
-// $chromeOptions->addArguments(['--headless']); //on | off chrome
+$chromeOptions->addArguments(['--headless']); //on | off chrome
 
 /*-------------------------------------------Open chrome-----------------------------------------------*/
 $capabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
@@ -57,16 +56,25 @@ $capabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
 /*-------------------------------------------Host-----------------------------------------------*/
 $driver = RemoteWebDriver::create($host, $capabilities);
 
-/*-------------------------------------------URL-----------------------------------------------*/
-$driver->get('https://facebook.com');
-
 /*-------------------------------------------Login-----------------------------------------------*/
-$driver->findElement(WebDriverBy::id('email'))
-    ->sendKeys($input_values['email']);
-$driver->findElement(WebDriverBy::id('pass'))
-    ->sendKeys($input_values['pass'])->submit();
+$driver->get('https://facebook.com');
+$driver->manage()->deleteAllCookies();
+$cookies = [];
+if(file_exists('cookie_fb/'.$input_values['email'].'.txt'))
+{
+	$cookies = file_get_contents('cookie_fb/'.$input_values['email'].'.txt');
+	$cookies = unserialize($cookies);
+}
+if(is_array($cookies))
+{
+	foreach($cookies as $key => $cookie)
+	{
+		$driver->manage()->addCookie($cookie);
+	}	
+}
+$driver->get('https://facebook.com');
 try {
-	$driver->wait(2)->until(
+	$driver->wait(5)->until(
 	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('.l9j0dhe7.tr9rh885.buofh1pr.cbu4d94t.j83agx80'))
 	);
 	$response[] = [
@@ -74,8 +82,10 @@ try {
 		'msg' => $input_values['email'].' - Đăng nhập thành công'
 	];
 } catch (Exception $e) {
+	$file_name = 'sts_fb/'.$input_values['email'].'.txt';
+	file_put_contents($file_name, 'fail');
 	$response[] = [
-		'status' => 'fail',
+		'status' => 'login_fail',
 		'msg' => $input_values['email'].' - Đăng nhập thất bại'
 	];
 	endSession($response, $driver, $input_values['email']);
@@ -123,10 +133,18 @@ foreach($input_values['locations'] as $k => $location)
 	/*-------------------------------------------Enter input-----------------------------------------------*/
 
 	/*-------------------------------------------Input Image-----------------------------------------------*/
-	$driver->wait(3)->until(
-	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector($input_names['image']))
-	);
-	$fileInput = $driver->findElement(WebDriverBy::cssSelector($input_names['image']));
+	try {
+		$driver->wait(3)->until(
+			WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector($input_names['image']))
+		);
+		$fileInput = $driver->findElement(WebDriverBy::cssSelector($input_names['image']));
+	} catch (Exception $e) {
+		$response[] = [
+			'status' => 'fail',
+			'msg' => $input_values['email'].' - Không tìm thấy chỗ đăng ảnh.'
+		];
+		endSession($response, $driver, $input_values['email']);
+	}
 	$images = randomImages($input_values['images']);
 	if(empty($images))
 	{
@@ -152,15 +170,37 @@ foreach($input_values['locations'] as $k => $location)
 	}
 
 	/*-------------------------------------------Input Title-----------------------------------------------*/
-	$driver->findElement(WebDriverBy::cssSelector($input_names['title']))->click()->sendKeys(randomArray($input_values['titles1']).' '.randomArray($input_values['titles2']).', '.$location);
+	try {
+		$driver->wait(5)->until(
+		    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector($input_names['title']))
+		);
+		$title = randomArray($input_values['titles1']).' '.randomArray($input_values['titles2']).' ,'.$location;
+		$driver->findElement(WebDriverBy::cssSelector($input_names['title']))->click()->sendKeys($title);
+	} catch (Exception $e) {
+		$response[] = [
+			'status' => 'fail',
+			'msg' => $input_values['email'].' - Không tìm thấy tiêu đề'
+		];
+		endSession($response, $driver, $input_values['email']);
+	}
 
 	/*-------------------------------------------Input Price-----------------------------------------------*/
-	$driver->findElement(WebDriverBy::cssSelector($input_names['price']))->click()->sendKeys($input_values['price']);
+	try {
+		$driver->wait(5)->until(
+		    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector($input_names['price']))
+		);
+		$driver->findElement(WebDriverBy::cssSelector($input_names['price']))->click()->sendKeys($input_values['price']);
+	} catch (Exception $e) {
+		$response[] = [
+			'status' => 'fail',
+			'msg' => $input_values['email'].' - Không tìm thấy giá'
+		];
+		endSession($response, $driver, $input_values['email']);
+	}
 
 	/*-------------------------------------------Input Category-----------------------------------------------*/
-	$driver->findElement(WebDriverBy::cssSelector($input_names['category']))->click();
 	try {
-
+		$driver->findElement(WebDriverBy::cssSelector($input_names['category']))->click();
 		$driver->wait(3)->until(
 			WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('.oajrlxb2.gs1a9yip.g5ia77u1.mtkw9kbi.tlpljxtp.qensuy8j.ppp5ayq2.goun2846.ccm00jje.s44p3ltw.mk2mc5f4.rt8b4zig.n8ej3o3l.agehan2d.sk4xxmp2.rq0escxv.nhd2j8a9.a8c37x1j.mg4g778l.btwxx1t3.pfnyh3mw.p7hjln8o.kvgmc6g5.cxmmr5t8.oygrvhab.hcukyx3x.tgvbjcpo.hpfvmrgz.jb3vyjys.rz4wbd8a.qt6c0cv9.a8nywdso.l9j0dhe7.i1ao9s8h.esuyzwwr.f1sip0of.du4w35lb.lzcic4wl.abiwlrkh.p8dawk7l.ue3kfks5.pw54ja7n.uo3d90p7.l82x9zwi[role="button"]'))
 		);
@@ -177,32 +217,62 @@ foreach($input_values['locations'] as $k => $location)
 
 	/*-------------------------------------------Input Condition-----------------------------------------------*/
 	try {
-		$driver->wait(3)->until(
-		    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector($input_names['condition']))
+		$driver->wait(1)->until(
+		    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('[aria-label="Condition"]'))
 		);
-		$driver->findElement(WebDriverBy::cssSelector($input_names['condition']))->click();
-		$driver->wait(3)->until(
+		$driver->findElement(WebDriverBy::cssSelector('[aria-label="Condition"]'))->click();
+		$driver->wait(5)->until(
 		    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('.oajrlxb2.g5ia77u1.qu0x051f.esr5mh6w.e9989ue4.r7d6kgcz.rq0escxv.nhd2j8a9.j83agx80.p7hjln8o.kvgmc6g5.oi9244e8.oygrvhab.h676nmdw.pybr56ya.dflh9lhu.f10w8fjw.scb9dxdr.i1ao9s8h.esuyzwwr.f1sip0of.lzcic4wl.l9j0dhe7.abiwlrkh.p8dawk7l.bp9cbjyn.dwo3fsh8.btwxx1t3.pfnyh3mw.du4w35lb'))
 		);
 		$input_conditions = $driver->findElements(WebDriverBy::cssSelector('.oajrlxb2.g5ia77u1.qu0x051f.esr5mh6w.e9989ue4.r7d6kgcz.rq0escxv.nhd2j8a9.j83agx80.p7hjln8o.kvgmc6g5.oi9244e8.oygrvhab.h676nmdw.pybr56ya.dflh9lhu.f10w8fjw.scb9dxdr.i1ao9s8h.esuyzwwr.f1sip0of.lzcic4wl.l9j0dhe7.abiwlrkh.p8dawk7l.bp9cbjyn.dwo3fsh8.btwxx1t3.pfnyh3mw.du4w35lb'));
 		$input_conditions[$input_values['condition']]->click();
 	} catch (Exception $e) {
+		
+	}
+
+	try {
+		$driver->wait(5)->until(
+		    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector($input_names['condition']))
+		);
+		$driver->findElement(WebDriverBy::cssSelector($input_names['condition']))->click();
+		$driver->wait(5)->until(
+		    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('.oajrlxb2.g5ia77u1.qu0x051f.esr5mh6w.e9989ue4.r7d6kgcz.rq0escxv.nhd2j8a9.j83agx80.p7hjln8o.kvgmc6g5.oi9244e8.oygrvhab.h676nmdw.pybr56ya.dflh9lhu.f10w8fjw.scb9dxdr.i1ao9s8h.esuyzwwr.f1sip0of.lzcic4wl.l9j0dhe7.abiwlrkh.p8dawk7l.bp9cbjyn.dwo3fsh8.btwxx1t3.pfnyh3mw.du4w35lb'))
+		);
+		$input_conditions = $driver->findElements(WebDriverBy::cssSelector('.oajrlxb2.g5ia77u1.qu0x051f.esr5mh6w.e9989ue4.r7d6kgcz.rq0escxv.nhd2j8a9.j83agx80.p7hjln8o.kvgmc6g5.oi9244e8.oygrvhab.h676nmdw.pybr56ya.dflh9lhu.f10w8fjw.scb9dxdr.i1ao9s8h.esuyzwwr.f1sip0of.lzcic4wl.l9j0dhe7.abiwlrkh.p8dawk7l.bp9cbjyn.dwo3fsh8.btwxx1t3.pfnyh3mw.du4w35lb'));
+		$input_conditions[$input_values['condition']]->click();
+	} catch (Exception $e) {
+		
+	}
+	
+
+	/*-------------------------------------------Input Brand-----------------------------------------------*/
+	try {
+		$driver->wait(5)->until(
+			WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector($input_names['brand']))
+		);
+		$driver->findElement(WebDriverBy::cssSelector($input_names['brand']))->click()->sendKeys($input_values['brand']);
+	} catch (Exception $e) {
 		$response[] = [
 			'status' => 'fail',
-			'msg' => $input_values['email'].' - Không tìm thấy tình trạng'
+			'msg' => $input_values['email'].' - Không tìm thấy thương hiệu'
 		];
 		endSession($response, $driver, $input_values['email']);
 	}
 	
 
-	/*-------------------------------------------Input Brand-----------------------------------------------*/
-	$driver->wait(3)->until(
-	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector($input_names['brand']))
-	);
-	$driver->findElement(WebDriverBy::cssSelector($input_names['brand']))->click()->sendKeys($input_values['brand']);
-
 	/*-------------------------------------------Input Description-----------------------------------------------*/
-	$driver->findElement(WebDriverBy::cssSelector($input_names['description']))->click()->sendKeys($input_values['description']);
+	try {
+		$driver->wait(5)->until(
+			WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector($input_names['description']))
+		);
+		$driver->findElement(WebDriverBy::cssSelector($input_names['description']))->click()->sendKeys($input_values['description']);
+	} catch (Exception $e) {
+		$response[] = [
+			'status' => 'fail',
+			'msg' => $input_values['email'].' - Không tìm thấy mô tả'
+		];
+		endSession($response, $driver, $input_values['email']);
+	}
 
 	/*-------------------------------------------Input Product tags-----------------------------------------------*/
 	try {
@@ -221,7 +291,7 @@ foreach($input_values['locations'] as $k => $location)
 	} catch (Exception $e) {
 		$response[] = [
 			'status' => 'warn',
-			'msg' => $input_values['email'].' - Không thể đăng tag ở người dùng này'
+			'msg' => $input_values['email'].' - Không tìm thấy thẻ tag'
 		];
 	}
 
@@ -285,7 +355,8 @@ function randomArray($arr)
 {
 	$lent = count($arr);
 	$index = rand(0, $lent - 1);
-	return isset($arr[$index]) ? $arr[$index] : false;
+	$result =  isset($arr[$index]) ? $arr[$index] : '';
+	return $result;
 }
 
 function randomImages(&$images)

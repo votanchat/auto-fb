@@ -50,3 +50,20 @@
 .d-none {
 	display: none !important;
 }
+
+.min-h-btn {
+	min-height: 330px;
+}
+
+.p-t-80 {
+	padding-top: 80%;
+	text-align: center;
+}
+
+.p-t-19 {
+	padding-top: 19px;
+}
+
+.bg-gray {
+	background-color: #ccc;
+}

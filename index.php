@@ -1,3 +1,44 @@
+<?php
+require 'vendor/autoload.php';
+$users = [];
+$dir = 'cookie_fb';
+if ($handle = opendir($dir))
+{
+	while (false !== ($file = readdir($handle)))
+	{
+		$users[]['email'] = $file;
+	}
+	closedir($handle);
+}
+foreach ($users as $key => $value)
+{
+	if (!preg_match("/txt/i", $value['email'])) {
+	    unset($users[$key]);
+	}
+	else
+	{
+		if(file_exists('images_fb/'.$value['email']))
+		{
+			$users[$key]['image'] = file_get_contents('images_fb/'.$value['email']);
+		}
+		else
+		{
+			$users[$key]['image'] = '';
+		}
+		if(file_exists('sts_fb/'.$value['email']))
+		{
+			$users[$key]['status'] = file_get_contents('sts_fb/'.$value['email']);
+		}
+		else
+		{
+			$users[$key]['status'] = 'fail';
+		}
+		$users[$key]['email'] = str_replace('.txt','', $users[$key]['email']);
+	}
+}
+$users = array_values($users);
+// dump($users);
+ ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -36,7 +77,7 @@
 </head>
 <body>
 	<section class="content" style="min-height: 0px;">
-		<a href="message.php" class="btn btn-primary" target="_blank">Tin nhắn</a>
+		<a href="messenger.php" class="btn btn-primary" target="_blank">Tin nhắn</a>
 	</section>
 
 	<form role="form" id="form-input" method="post" enctype="multipart/form-data">
@@ -179,11 +220,29 @@ xả hàng</textarea>
 					
 				<div class="tab-pane" id="tab_2">
 					<div class="box-body">
-						<div class="form-group">
-							<span class="label label-primary bd-r-0">Tài khoản / Mật khẩu</span>
-							<textarea class="form-control min-h-text" name="accounts" rows="3" placeholder="" required>lehuuduc114114@gmail.com lehuuduc</textarea>
-							<div id="error__accounts">
-
+						<div class="row">
+							<div class="col-md-5">
+								<div class="form-group">
+									<span class="label label-primary bd-r-0">Tài khoản / Mật khẩu</span>
+									<textarea class="form-control min-h-text" name="accounts" rows="3" placeholder="" required></textarea>
+								</div>
+							</div>
+							<div class="col-md-2">
+								<div class="form-group min-h-btn p-t-80">
+									<a class="btn btn-app p-t-19" id="btn-login">
+										<i class="fa fa-play"></i>
+									</a>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group">
+									<span class="label label-primary bd-r-0">Tài khoản đã đăng nhập thành công</span>
+									<ul class="list-group">
+										<?php foreach($users as $key => $user){ ?>
+										<li id="<?php echo $user['email']; ?>" class="list-group-item <?php if($user['status'] == 'fail'){ echo 'bg-gray'; } ?>"><img src="<?php echo $user['image'] ?>" style="width: 18px; height: 18px; border-radius: 50%;"> <?php echo $user['email']; ?><a href="javascript:void(0)" class="pull-right del-user">x</a></li>
+										<?php } ?>
+									</ul>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -291,8 +350,52 @@ tagname3</textarea>
 	<script src="assets/dist/js/additional-methods.min.js"></script>
 
 	<script type="text/javascript">
+		var sts = {success: 'label-default', fail: 'label-danger', login_fail: 'label-danger', warn: 'label-warning'};
+	</script>
+	<script type="text/javascript">
+		$( document ).ready(function() {
 
-		var sts = {success: 'label-default', fail: 'label-danger', warn: 'label-warning'};
+			$('#btn-login').click(function(){
+				let accounts = multipleLinesToArray($('form#form-input :input[name="accounts"]').val());
+				for (i in accounts)
+		    	{
+		    		let tmp = splitEmailPass(accounts[i]);
+		    		user = {email: tmp[0], pass: tmp[1]};
+		    		
+		    		$.ajax({
+			            type: "post",
+			            dataType: "json",
+			            data: user,
+			            url:"http://localhost/auto-fb/login_fb.php",
+			            beforeSend: function(xhr) {
+			                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			            },
+			            success: function (data) {
+			            	$('#option-process').append('<option class="label label-process m-t-3 '+sts[data['message'].status]+'">'+data['message'].msg+'</option>');
+			            	var ss = document.getElementById(data['info']['email']);
+			            	if(data['message']['status'] == 'success')
+			            	{
+			            		if(ss != null)
+			            		{
+			            			ss.remove();
+			            		}
+			            		$('.list-group').append('<li id="'+data['info']['email']+'" class="list-group-item"><img src="'+data['info']['image']+'" style="width: 18px; height: 18px; border-radius: 50%;"> '+data['info']['email']+'<a href="javascript:void(0)" class="pull-right del-user">x</a></li>');
+			            	}
+			            },
+			            error: function (XMLHttpRequest, textStatus, errorThrown) {
+			               $('#option-process').append('<option class="label label-process m-t-3 label-danger">'+user.email+' - Xảy ra lỗi với người dùng này</option>');
+			            }
+			        });
+		    	}
+			});
+
+			$(document).on("click", ".del-user", function () {
+				$(this).parent().remove();
+			});
+		})
+	</script>
+	<script type="text/javascript">
+
 		function multipleLinesToArray(value)
 		{
 			var lines = value.split(/\n/);
@@ -343,42 +446,38 @@ tagname3</textarea>
 		$('#btn-refresh').click(function () {
 	        $('#option-process').empty();
 	    });
-	    $('#btn-cancel').click(function () {
-	        window.stop();
-	    });
 
 	    const foreachAccounts = async  (inputs, accounts) =>
 		{
-			for (i in accounts)
+			for (let i = 0; i < accounts.length; i++)
 	    	{
-	    		let user = splitEmailPass(accounts[i]);
-	    		inputs.email = user[0];
-	    		inputs.pass = user[1];
-	    		await sendRequest(inputs);
-	    		if(i == accounts.length - 1)
-	    		{
-	    			$('#btn-publish').removeAttr("disabled", true);
-	    			$('#btn-reset').removeAttr("disabled", true);
-	    			$('#btn-refresh').removeClass('d-none');
-	    			$('#icon-processing').addClass('d-none');
-	    			$('#btn-cancel').addClass('d-none');
-	    		}
+	    		inputs.email = accounts[i].id;
+	    		await sendRequestFB(inputs);
 	    	}
+	    	$('#btn-publish').removeAttr("disabled", true);
+	    	$('#btn-reset').removeAttr("disabled", true);
+	    	$('#btn-refresh').removeClass('d-none');
+	    	$('#icon-processing').addClass('d-none');
+	    	$('#btn-cancel').addClass('d-none');
 		}
 
-		function sendRequest(input_data)
+		function sendRequestFB(input_data)
 		{
 			return $.ajax({
 	            type: "post",
 	            dataType: "json",
 	            data: input_data,
-	            url:"http://localhost/auto-fb/process.php",
+	            url:"http://localhost/auto-fb/process_fb.php",
 	            beforeSend: function(xhr) {
 	                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 	            },
 	            success: function (data) {
 	            	for(let x = 0; x < data.length; x++)
 	            	{
+	            		if(data[x].status == 'login_fail')
+	            		{
+	            			document.getElementById(input_data.email).classList.add("bg-gray");
+	            		}
 	            		$('#option-process').append('<option class="label label-process m-t-3 '+sts[data[x].status]+'">'+data[x].msg+'</option>');
 	            	}
 	            },
@@ -391,6 +490,20 @@ tagname3</textarea>
 		function sleep(ms) {
 			return new Promise(resolve => setTimeout(resolve, ms));
 		}
+
+		function formatUser(accounts)
+		{
+			let users = [];
+			for (i in accounts)
+	    	{
+	    		let tmp = {email: null, email: null};
+	    		let user = splitEmailPass(accounts[i]);
+	    		tmp.email = user[0];
+	    		tmp.pass = user[1];
+	    		users[i] = tmp;
+	    	}
+	    	return users;
+		}
 	</script>
 	<script type="text/javascript">
 		$("#form-input").validate({
@@ -400,7 +513,9 @@ tagname3</textarea>
 	            this.element(element);
 	        },
 	        rules: {
-	            
+	        	accounts: {
+	        		required: false
+	        	},
 	        },
 	        messages: {
 	            
@@ -418,7 +533,7 @@ tagname3</textarea>
 		        $('#icon-processing').removeClass('d-none');
 		        $('#btn-cancel').removeClass('d-none');
 		    	let inputs = getInput();
-		    	let accounts = multipleLinesToArray($('form#form-input :input[name="accounts"]').val());
+		    	let accounts = $('.list-group').children();
 		    	foreachAccounts(inputs, accounts);
 	        }
 	    });
