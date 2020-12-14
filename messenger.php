@@ -181,7 +181,11 @@ $session = $driver->getSessionID();
 
 			$('#btn-login').click(function(){
 				let accounts = multipleLinesToArray($('form#form-input :input[name="accounts"]').val());
-
+				if(accounts.length > 0)
+				{
+					beforeProcess()
+				}
+				
 				for (i in accounts)
 		    	{
 		    		let tmp = splitEmailPass(accounts[i]);
@@ -206,9 +210,17 @@ $session = $driver->getSessionID();
 			            		}
 			            		$('.list-group').append('<li id="'+data['info']['email']+'" class="list-group-item"><a class="img-ms" data-id="'+data['info']['email']+'" href="javascript:void(0)"><img src="'+data['info']['image']+'" style="width: 18px; height: 18px; border-radius: 50%;"></a> '+data['info']['email']+'<a href="javascript:void(0)" class="pull-right del-user">x</a></li>');
 			            	}
+			            	if(i == accounts.length - 1)
+			            	{
+			            		afterProcess();
+			            	}
 			            },
 			            error: function (XMLHttpRequest, textStatus, errorThrown) {
-			               $('#option-process').append('<option class="label label-process m-t-3 label-danger">'+user.email+' - Xảy ra lỗi với người dùng này</option>');
+			            	$('#option-process').append('<option class="label label-process m-t-3 label-danger">'+user.email+' - Xảy ra lỗi với người dùng này</option>');
+			            	if(i == accounts.length - 1)
+			            	{
+			            		afterProcess();
+			            	}
 			            }
 			        });
 		    	}
@@ -234,6 +246,28 @@ $session = $driver->getSessionID();
 					$('#option-process').append('<option class="label label-process m-t-3 '+sts[data.message.status]+'">'+data.message.msg+'</option>');
 				});
 			});
+
+			$(document).on("click", "#btn-refresh", function (){
+				$('#option-process').empty();
+			});
+
+			function beforeProcess()
+			{
+				$('#btn-refresh').addClass('d-none');
+		        $('#icon-processing').removeClass('d-none');
+		        $('#btn-login').empty();
+		        $('#btn-login').addClass('not-active');
+		        $('#btn-login').append('<i class="fa fa-spinner"></i>');
+			}
+
+			function afterProcess()
+			{
+				$('#btn-refresh').removeClass('d-none');
+				$('#icon-processing').addClass('d-none');
+				$('#btn-login').empty();
+				$('#btn-login').removeClass('not-active');
+				$('#btn-login').append('<i class="fa fa-play"></i>');
+			}
 
 		});
 		
