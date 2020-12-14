@@ -33,6 +33,61 @@ $driver->findElement(WebDriverBy::id('email'))
     ->sendKeys($user['email']);
 $driver->findElement(WebDriverBy::id('pass'))
     ->sendKeys($user['pass'])->submit();
+
+$fa_check = false;
+try {
+	$driver->wait(5)->until(
+	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('input[name="approvals_code"]'))
+	);
+	$fa_check = true;
+} catch (Exception $e) {
+	
+}
+if($fa_check == true)
+{
+	$driver->findElement(WebDriverBy::cssSelector('input[name="approvals_code"]'))->click()->sendKeys($user['check']);
+	$driver->findElement(WebDriverBy::cssSelector('button[name="submit[Continue]"]'))->click();
+	try {
+		$driver->wait(2)->until(
+			WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('input[name="name_action_selected"]'))
+		);
+		$driver->findElement(WebDriverBy::cssSelector('button[name="submit[Continue]"]'))->click();
+	} catch (Exception $e) {
+		$response['message'] = [
+			'status' => 'fail',
+			'msg' => $user['email'].' - Mã xác thực không đúng'
+		];
+		endSession($response, $driver);
+	}
+
+	try {
+		$driver->wait(2)->until(
+			WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('button[name="submit[Continue]"]'))
+		);
+		$driver->findElement(WebDriverBy::cssSelector('button[name="submit[Continue]"]'))->click();
+	} catch (Exception $e) {
+		
+	}
+
+	try {
+		$driver->wait(2)->until(
+			WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('button[name="submit[This was me]"]'))
+		);
+		$driver->findElement(WebDriverBy::cssSelector('button[name="submit[This was me]"]'))->click();
+	} catch (Exception $e) {
+		
+	}
+
+	try {
+		$driver->wait(2)->until(
+			WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('input[name="name_action_selected"]'))
+		);
+		$driver->findElement(WebDriverBy::cssSelector('button[name="submit[Continue]"]'))->click();
+	} catch (Exception $e) {
+		
+	}
+}
+
 try {
 	$driver->wait(5)->until(
 	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('.l9j0dhe7.tr9rh885.buofh1pr.cbu4d94t.j83agx80'))

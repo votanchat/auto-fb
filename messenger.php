@@ -190,7 +190,11 @@ $session = $driver->getSessionID();
 		    	{
 		    		let tmp = splitEmailPass(accounts[i]);
 		    		user = {email: tmp[0], pass: tmp[1]};
-		    		
+		    		user = {email: tmp[0], pass: tmp[1], check: '0'};
+		    		if(tmp.includes(2) != 'undefined')
+		    		{
+		    			user.check = tmp[2];
+		    		}
 		    		$.ajax({
 			            type: "post",
 			            dataType: "json",

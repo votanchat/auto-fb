@@ -35,6 +35,65 @@ $driver->wait(5)->until(
 $driver->executeScript('document.querySelector(\'input[name="email"]\').value = "'.$user['email'].'"');
 $driver->executeScript('document.querySelector(\'input[name="pass"]\').value = "'.$user['pass'].'"');
 $driver->executeScript('document.querySelector(\'button[name="login"]\').click()');
+
+$fa_check = false;
+try {
+	$driver->wait(5)->until(
+	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('img[src="https://static.xx.fbcdn.net/rsrc.php/y-/r/S8RO1gGmYHl.svg"]'))
+	);
+	$fa_check = true;
+} catch (Exception $e) {
+	
+}
+if($fa_check == true)
+{
+	$driver->findElement(WebDriverBy::cssSelector('a[role="button"]'))->click();
+	$driver->wait(5)->until(
+	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('input[name="approvals_code"]'))
+	);
+	$driver->findElement(WebDriverBy::cssSelector('input[name="approvals_code"]'))->click()->sendKeys($user['check']);
+	$driver->findElement(WebDriverBy::cssSelector('button[name="submit[Continue]"]'))->click();
+	try {
+		$driver->wait(2)->until(
+			WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('input[name="name_action_selected"]'))
+		);
+		$driver->findElement(WebDriverBy::cssSelector('button[name="submit[Continue]"]'))->click();
+	} catch (Exception $e) {
+		$response['message'] = [
+			'status' => 'fail',
+			'msg' => $user['email'].' - Mã xác thực không đúng'
+		];
+		endSession($response, $driver);
+	}
+
+	try {
+		$driver->wait(2)->until(
+			WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('button[name="submit[Continue]"]'))
+		);
+		$driver->findElement(WebDriverBy::cssSelector('button[name="submit[Continue]"]'))->click();
+	} catch (Exception $e) {
+		
+	}
+
+	try {
+		$driver->wait(2)->until(
+			WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('button[name="submit[This was me]"]'))
+		);
+		$driver->findElement(WebDriverBy::cssSelector('button[name="submit[This was me]"]'))->click();
+	} catch (Exception $e) {
+		
+	}
+
+	try {
+		$driver->wait(2)->until(
+			WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('input[name="name_action_selected"]'))
+		);
+		$driver->findElement(WebDriverBy::cssSelector('button[name="submit[Continue]"]'))->click();
+	} catch (Exception $e) {
+		
+	}
+}
+
 try {
 	$driver->wait(5)->until(
 	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('[aria-label="Tạo phòng họp mặt mới"]'))
