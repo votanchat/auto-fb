@@ -29,6 +29,7 @@ if(is_array($cookies))
 	}
 }
 $driver->get('https://www.messenger.com');
+sleep(2);
 $response = ['info' => ['email' => $email, 'image' => ''], 'message' => ['status' => 'fail', 'msg' =>  $email.' - Đăng nhập thất bại']];
 
 try {
