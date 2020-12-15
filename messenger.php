@@ -186,7 +186,7 @@ $session = $driver->getSessionID();
 					beforeProcess()
 				}
 				
-				for (i in accounts)
+				for (let i = 0; i < accounts.length; i++)
 		    	{
 		    		let tmp = splitEmailPass(accounts[i]);
 		    		user = {email: tmp[0], pass: tmp[1]};
@@ -294,7 +294,8 @@ $session = $driver->getSessionID();
 
 		function splitEmailPass(string)
 		{
-			var lines = string.split(' ');
+			string = string+'';
+			var lines = string.split(" ");
 			for(let a = 0; a < lines.length; a++)
 			{
 				if(lines[a] == " ")

@@ -1,5 +1,12 @@
 <?php
 require 'vendor/autoload.php';
+use Facebook\WebDriver\Remote\DesiredCapabilities;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\Remote\LocalFileDetector;
+use Facebook\WebDriver\Chrome\ChromeOptions;
+use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverExpectedCondition;
+
 $users = [];
 $dir = 'cookie_fb';
 if ($handle = opendir($dir))
@@ -38,6 +45,18 @@ foreach ($users as $key => $value)
 }
 $users = array_values($users);
 // dump($users);
+/*-------------------------------------------Create host-----------------------------------------------*/
+$host = 'http://localhost:4444';
+$capabilities = DesiredCapabilities::chrome();
+/*-------------------------------------------Start process-----------------------------------------------*/
+$chromeOptions = new ChromeOptions();
+$chromeOptions->addArguments(['--no-sandbox', '--disable-gpu', '--disable-notifications']);
+$chromeOptions->addArguments(['--headless']); //on | off chrome
+/*-------------------------------------------Open chrome-----------------------------------------------*/
+$capabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
+/*-------------------------------------------Host-----------------------------------------------*/
+$driver = RemoteWebDriver::create($host, $capabilities);
+$session = $driver->getSessionID();
  ?>
 <!DOCTYPE html>
 <html>
@@ -105,6 +124,7 @@ Giày da</textarea>
 									<div id="error__titles1">
 
 									</div>
+									<input type="hidden" name="session" value="<?php echo $session; ?>">
 								</div>
 							</div>
 						</div>
@@ -203,15 +223,33 @@ xả hàng</textarea>
 
 						<div class="col-md-6">
 							<div class="box-body">
+								<div class="row">
+									<div class="col-md-9">
+										<div class="form-group">
+											<span class="label label-primary bd-r-0">Mô tả</span>
+											<textarea class="form-control min-h-des" rows="3" name="description" placeholder="" required>Sản phẩm phân phối chất lượng cao</textarea>
+											<div id="error__description">
 
-								<div class="form-group">
-									<span class="label label-primary bd-r-0">Mô tả</span>
-									<textarea class="form-control min-h-des" rows="3" name="description" placeholder="" required>Sản phẩm phân phối chất lượng cao</textarea>
-									<div id="error__description">
+											</div>
+										</div>
+									</div>
+									<div class="col-md-3">
+										<div class="form-group">
+											<span class="label label-primary bd-r-0">Delay Vị trí</span>
+											<input type="number" class="form-control" name="delay_location" min="0" max="100000000" placeholder="" required value="0">
+											<div id="error__delay_account">
 
+											</div>
+										</div>
+										<div class="form-group">
+											<span class="label label-primary bd-r-0">Delay Tài khoản</span>
+											<input type="number" class="form-control" name="delay_account" min="0" max="100000000" placeholder="" required value="5">
+											<div id="error__delay_account">
+
+											</div>
+										</div>
 									</div>
 								</div>
-
 							</div>
 						</div>
 
@@ -351,6 +389,9 @@ tagname3</textarea>
 
 	<script type="text/javascript">
 		var sts = {success: 'label-default', fail: 'label-danger', login_fail: 'label-danger', warn: 'label-warning'};
+		let delay_location = 0;
+		let delay_account = 0;
+
 	</script>
 	<script type="text/javascript">
 		$( document ).ready(function() {
@@ -362,7 +403,7 @@ tagname3</textarea>
 					beforeProcess()
 				}
 
-				for (i in accounts)
+				for (let i = 0; i < accounts.length; i++)
 		    	{
 		    		let tmp = splitEmailPass(accounts[i]);
 		    		user = {email: tmp[0], pass: tmp[1], check: '0'};
@@ -448,7 +489,8 @@ tagname3</textarea>
 
 		function splitEmailPass(string)
 		{
-			var lines = string.split(' ');
+			string = string+'';
+			var lines = string.split(" ");
 			for(let a = 0; a < lines.length; a++)
 			{
 				if(lines[a] == " ")
@@ -461,39 +503,51 @@ tagname3</textarea>
 
 		function getInput()
 		{
+			let session = $('input[name="session"]').val();
 			var titles1 = $('form#form-input :input[name="titles1"]').val();
 			var titles2 = $('form#form-input :input[name="titles2"]').val();
 			var price = $('form#form-input :input[name="price"]').val();
 			var category = $('form#form-input :input[name="category"]').val();
 			var condition = $('form#form-input :input[name="condition"]').val();
 			var brand = $('form#form-input :input[name="brand"]').val();
-			var locations = $('form#form-input :input[name="locations"]').val();
-			var images = $('form#form-input :input[name="images"]').val();
 			var description = $('form#form-input :input[name="description"]').val();
 			var tags = $('form#form-input :input[name="tags"]').val();
 			titles1 = multipleLinesToArray(titles1);
 			titles2 = multipleLinesToArray(titles2);
-			locations =  multipleLinesToArray(locations);
-			images = multipleLinesToArray(images);
 			tags = multipleLinesToArray(tags);
-			return {titles1: titles1, titles2: titles2, price: price, category: category, condition: condition, brand: brand, locations: locations, images: images, description: description, tags: tags, email: null, pass: null};
+			return {session: session,titles1: titles1, titles2: titles2, price: price, category: category, condition: condition, brand: brand, location: null, images: null, description: description, tags: tags, email: null};
 		}
+
 		$('#btn-refresh').click(function () {
 	        $('#option-process').empty();
 	    });
 
-	    const foreachAccounts = async  (inputs, accounts) =>
+	    async function foreachLocation(inputs, accounts, locations, images)
 		{
-			for (let i = 0; i < accounts.length; i++)
-	    	{
-	    		inputs.email = accounts[i].id;
-	    		await sendRequestFB(inputs);
-	    	}
+			for(let x = 0; x < locations.length; x++)
+			{
+				await sleep(delay_location*1000);
+				inputs.location = locations[x];
+				let imgs_tmp = randomImages(images);
+				inputs.images = imgs_tmp;
+				await foreachAccount(inputs, accounts);
+			}
 	    	$('#btn-publish').removeAttr("disabled", true);
 	    	$('#btn-reset').removeAttr("disabled", true);
 	    	$('#btn-refresh').removeClass('d-none');
 	    	$('#icon-processing').addClass('d-none');
 	    	$('#btn-cancel').addClass('d-none');
+		}
+
+		async function foreachAccount(inputs, accounts)
+		{
+			for(let i = 0; i < accounts.length; i++)
+			{
+				await sleep(delay_account*1000);
+				inputs.email = accounts[i].id;
+				await sendRequestFB(inputs);
+			}
+			return 0;
 		}
 
 		function sendRequestFB(input_data)
@@ -517,7 +571,7 @@ tagname3</textarea>
 	            	}
 	            },
 	            error: function (XMLHttpRequest, textStatus, errorThrown) {
-	               $('#option-process').append('<option class="label label-process m-t-3 label-default">'+input_data.email+' - Xảy ra lỗi với người dùng này</option>');
+	               $('#option-process').append('<option class="label label-process m-t-3 label-danger">'+input_data.email+' - Xảy ra lỗi với người dùng này</option>');
 	            }
 	        });
 		}
@@ -525,6 +579,51 @@ tagname3</textarea>
 		function sleep(ms) {
 			return new Promise(resolve => setTimeout(resolve, ms));
 		}
+
+		function randomImages(images)
+		{
+			let result = [];
+			shuffle(images);
+			let img_lent = images.length;
+			for(let y = 0; y < img_lent; y++)
+			{
+				result.push(images[y]);
+				if(y == 1)
+				{
+					break;
+				}
+			}
+
+			for(let k = 0; k < result.length; k++)
+			{
+				images.remove(result[k]);
+			}
+			return result;
+		}
+
+		function shuffle(array)
+		{
+			var currentIndex = array.length, temporaryValue, randomIndex;
+			while (0 !== currentIndex) {
+				randomIndex = Math.floor(Math.random() * currentIndex);
+				currentIndex -= 1;
+				temporaryValue = array[currentIndex];
+				array[currentIndex] = array[randomIndex];
+				array[randomIndex] = temporaryValue;
+			}
+			return array;
+		}
+
+		Array.prototype.remove = function() {
+			var what, a = arguments, L = a.length, ax;
+			while (L && this.length) {
+				what = a[--L];
+				while ((ax = this.indexOf(what)) !== -1) {
+					this.splice(ax, 1);
+				}
+			}
+			return this;
+		};
 
 		function formatUser(accounts)
 		{
@@ -567,9 +666,16 @@ tagname3</textarea>
 		        $('#btn-refresh').addClass('d-none');
 		        $('#icon-processing').removeClass('d-none');
 		        $('#btn-cancel').removeClass('d-none');
+		        delay_location = $('input[name="delay_location"]').val();
+		        delay_account = $('input[name="delay_account"]').val();
+
 		    	let inputs = getInput();
 		    	let accounts = $('.list-group').children();
-		    	foreachAccounts(inputs, accounts);
+		    	let locations = $('form#form-input :input[name="locations"]').val();
+		    	locations =  multipleLinesToArray(locations);
+		    	let images = $('form#form-input :input[name="images"]').val();
+		    	images = multipleLinesToArray(images);
+		    	foreachLocation(inputs, accounts, locations, images);
 	        }
 	    });
 	</script>
