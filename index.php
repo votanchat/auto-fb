@@ -224,7 +224,7 @@ xả hàng</textarea>
 						<div class="col-md-6">
 							<div class="box-body">
 								<div class="row">
-									<div class="col-md-9">
+									<div class="col-md-6">
 										<div class="form-group">
 											<span class="label label-primary bd-r-0">Mô tả</span>
 											<textarea class="form-control min-h-des" rows="3" name="description" placeholder="" required>Sản phẩm phân phối chất lượng cao</textarea>
@@ -233,19 +233,32 @@ xả hàng</textarea>
 											</div>
 										</div>
 									</div>
-									<div class="col-md-3">
-										<div class="form-group">
-											<span class="label label-primary bd-r-0">Delay Vị trí</span>
-											<input type="number" class="form-control" name="delay_location" min="0" max="100000000" placeholder="" required value="0">
-											<div id="error__delay_account">
+									<div class="col-md-6 row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<span class="label label-primary bd-r-0">Delay Vị trí</span>
+												<input type="number" class="form-control" name="delay_location" min="0" max="100000000" placeholder="" required value="0">
+												<div id="error__delay_account">
 
+												</div>
 											</div>
 										</div>
-										<div class="form-group">
-											<span class="label label-primary bd-r-0">Delay Tài khoản</span>
-											<input type="number" class="form-control" name="delay_account" min="0" max="100000000" placeholder="" required value="5">
-											<div id="error__delay_account">
+										<div class="col-md-6">
+											<div class="form-group">
+												<span class="label label-primary bd-r-0">Delay Tài khoản</span>
+												<input type="number" class="form-control" name="delay_account" min="0" max="100000000" placeholder="" required value="5">
+												<div id="error__delay_account">
 
+												</div>
+											</div>
+										</div>
+										<div class="col-md-12">
+											<div class="form-group">
+												<span class="label label-primary bd-r-0">Số lượng ảnh một bài đăng</span>
+												<input type="number" class="form-control" name="number_image" min="1" max="100000000" placeholder="" required value="2">
+												<div id="error__number_image">
+
+												</div>
 											</div>
 										</div>
 									</div>
@@ -391,6 +404,7 @@ tagname3</textarea>
 		var sts = {success: 'label-default', fail: 'label-danger', login_fail: 'label-danger', warn: 'label-warning'};
 		let delay_location = 0;
 		let delay_account = 0;
+		let number_image = 0;
 
 	</script>
 	<script type="text/javascript">
@@ -588,7 +602,7 @@ tagname3</textarea>
 			for(let y = 0; y < img_lent; y++)
 			{
 				result.push(images[y]);
-				if(y == 1)
+				if(y == number_image - 1)
 				{
 					break;
 				}
@@ -668,6 +682,7 @@ tagname3</textarea>
 		        $('#btn-cancel').removeClass('d-none');
 		        delay_location = $('input[name="delay_location"]').val();
 		        delay_account = $('input[name="delay_account"]').val();
+		        number_image = $('input[name="number_image"]').val();
 
 		    	let inputs = getInput();
 		    	let accounts = $('.list-group').children();

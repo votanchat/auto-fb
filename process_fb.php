@@ -155,7 +155,7 @@ foreach($images as $image)
 	} catch (Exception $e) {
 		$response[] = [
 			'status' => 'fail',
-			'msg' => $input_values['email'].' - '.$input_values['location'].' - Không tìm thấy hình ảnh.'
+			'msg' => $input_values['email'].' - '.$input_values['location'].' - Không tìm thấy hình ảnh'
 		];
 		endSession($response, $input_values);
 	}
@@ -209,11 +209,11 @@ try {
 
 /*-------------------------------------------Input Condition-----------------------------------------------*/
 try {
-	$driver->wait(1)->until(
+	$driver->wait(2)->until(
 	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('[aria-label="Condition"]'))
 	);
 	$driver->findElement(WebDriverBy::cssSelector('[aria-label="Condition"]'))->click();
-	$driver->wait(5)->until(
+	$driver->wait(2)->until(
 	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('.oajrlxb2.g5ia77u1.qu0x051f.esr5mh6w.e9989ue4.r7d6kgcz.rq0escxv.nhd2j8a9.j83agx80.p7hjln8o.kvgmc6g5.oi9244e8.oygrvhab.h676nmdw.pybr56ya.dflh9lhu.f10w8fjw.scb9dxdr.i1ao9s8h.esuyzwwr.f1sip0of.lzcic4wl.l9j0dhe7.abiwlrkh.p8dawk7l.bp9cbjyn.dwo3fsh8.btwxx1t3.pfnyh3mw.du4w35lb'))
 	);
 	$input_conditions = $driver->findElements(WebDriverBy::cssSelector('.oajrlxb2.g5ia77u1.qu0x051f.esr5mh6w.e9989ue4.r7d6kgcz.rq0escxv.nhd2j8a9.j83agx80.p7hjln8o.kvgmc6g5.oi9244e8.oygrvhab.h676nmdw.pybr56ya.dflh9lhu.f10w8fjw.scb9dxdr.i1ao9s8h.esuyzwwr.f1sip0of.lzcic4wl.l9j0dhe7.abiwlrkh.p8dawk7l.bp9cbjyn.dwo3fsh8.btwxx1t3.pfnyh3mw.du4w35lb'));
@@ -288,9 +288,9 @@ try {
 }
 
 /*-------------------------------------------Input Location-----------------------------------------------*/
-$driver->findElement(WebDriverBy::cssSelector($input_names['location']))->click()->sendKeys($input_values['location']);
 try {
-	$driver->wait(3)->until(
+	$driver->findElement(WebDriverBy::cssSelector($input_names['location']))->click()->sendKeys($input_values['location']);
+	$driver->wait(5)->until(
 		WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('.bp9cbjyn.nhd2j8a9.j83agx80.ni8dbmo4.stjgntxs.l9j0dhe7.dwzzwef6.ue3kfks5.pw54ja7n.uo3d90p7.l82x9zwi'))
 	);
 	$input_locations = $driver->findElements(WebDriverBy::cssSelector('.bp9cbjyn.nhd2j8a9.j83agx80.ni8dbmo4.stjgntxs.l9j0dhe7.dwzzwef6.ue3kfks5.pw54ja7n.uo3d90p7.l82x9zwi'));
@@ -325,7 +325,7 @@ try {
 } catch (Exception $e) {
 	$response[] = [
 		'status' => 'fail',
-		'msg' => $input_values['email'].' - '.$input_values['location'].' - Không thể đăng bài vì thiếu nội dung'
+		'msg' => $input_values['email'].' - '.$input_values['location'].' - Không thể đăng bài vì thiếu nội dung nào đó'
 	];
 	endSession($response, $driver, $input_values['email']);
 }
