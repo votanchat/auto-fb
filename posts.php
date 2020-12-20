@@ -7,7 +7,7 @@ use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 $users = [];
-$dir = 'cookie_ms';
+$dir = 'cookie_fb';
 if ($handle = opendir($dir))
 {
 	while (false !== ($file = readdir($handle)))
@@ -23,17 +23,17 @@ foreach ($users as $key => $value)
 	}
 	else
 	{
-		if(file_exists('images_ms/'.$value['email']))
+		if(file_exists('images_fb/'.$value['email']))
 		{
-			$users[$key]['image'] = file_get_contents('images_ms/'.$value['email']);
+			$users[$key]['image'] = file_get_contents('images_fb/'.$value['email']);
 		}
 		else
 		{
 			$users[$key]['image'] = '';
 		}
-		if(file_exists('sts_ms/'.$value['email']))
+		if(file_exists('sts_fb/'.$value['email']))
 		{
-			$users[$key]['status'] = file_get_contents('sts_ms/'.$value['email']);
+			$users[$key]['status'] = file_get_contents('sts_fb/'.$value['email']);
 		}
 		else
 		{
@@ -50,11 +50,12 @@ $capabilities = DesiredCapabilities::chrome();
 /*-------------------------------------------Start process-----------------------------------------------*/
 $chromeOptions = new ChromeOptions();
 $chromeOptions->addArguments(['--no-sandbox', '--disable-gpu', '--disable-notifications']);
-// $chromeOptions->addArguments(['--headless']); //on | off chrome
+$chromeOptions->addArguments(['--headless']); //on | off chrome
 /*-------------------------------------------Open chrome-----------------------------------------------*/
 $capabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
 /*-------------------------------------------Host-----------------------------------------------*/
 $driver = RemoteWebDriver::create($host, $capabilities);
+$driver->manage()->window()->maximize();
 $session = $driver->getSessionID();
  ?>
 <!DOCTYPE html>
@@ -147,6 +148,25 @@ $session = $driver->getSessionID();
 			</div>
 		</div>
 	</section>
+
+	<section class="content">
+		<div class="box-body">
+			<table id="example1" class="table table-bordered table-striped">
+				<thead>
+					<th class="text-center" style="width: 30px;">No</th>
+					<th class="text-center" style="width: 20%;">Tiêu đề</th>
+					<th class="text-center" style="width: 10%;">Giá</th>
+					<th class="text-center" style="width: 20%;">Trạng thái - Đăng lúc</th>
+					<th class="text-center" style="width: 20%;">Lượt xem</th>
+					<th class="text-center" style="width: 20%;">Thông tin bài đăng</th>
+					<th class="text-center" style="width: 10%;">Hành động</th>
+				</thead>
+				<tbody class="bt-data">
+					
+				</tbody>
+			</table>
+		</div>
+	</section>
 	<div class="modal modal-full fade" id="dialogSearchLoading" role="dialog" data-backdrop="static" data-keyboard="false">
 		<div class="modal-dialog">
 			<div class="modal-content align-items-center justify-content-center">
@@ -185,7 +205,6 @@ $session = $driver->getSessionID();
 	</script>
 	<script type="text/javascript">
 		$( document ).ready(function() {
-
 			$('#btn-login').click(function(){
 				let accounts = multipleLinesToArray($('form#form-input :input[name="accounts"]').val());
 				if(accounts.length > 0)
@@ -209,12 +228,12 @@ $session = $driver->getSessionID();
 		    		{
 		    			user.check = tmp[2];
 		    		}
-		    		
+
 		    		$.ajax({
 			            type: "post",
 			            dataType: "json",
 			            data: user,
-			            url:"http://localhost/auto-fb/login_ms.php",
+			            url:"http://localhost/auto-fb/login_fb.php",
 			            beforeSend: function(xhr) {
 			                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 			            },
@@ -253,24 +272,132 @@ $session = $driver->getSessionID();
 				$('#dialogSearchLoading').modal('show');
 				let session = $('input[name="session"]').val();
 				let email = $(this).data('id');
-				$.post("http://localhost/auto-fb/process_ms.php?session="+session+"&email="+email , function( data ) {
-					data = JSON.parse(data);
-					if(data.message.status == 'fail')
-					{
-						document.getElementById(data.info.email).classList.add("bg-gray");
-					}
-					else
-					{
-						document.getElementById(data.info.email).classList.remove("bg-gray");
-					}
-					$('#option-process').append('<option class="label label-process m-t-3 '+sts[data.message.status]+'">'+data.message.msg+'</option>');
-					$('#dialogSearchLoading').modal('hide');
-				});
+
+				$.ajax({
+			            type: "post",
+			            dataType: "json",
+			            data: {},
+			            url:"http://localhost/auto-fb/process_posts.php?session="+session+"&email="+email,
+			            beforeSend: function(xhr) {
+			                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			            },
+			            success: function (data) {
+			            	for(let x = 0; x < data['message'].length; x++)
+			            	{
+			            		if(data['message'][x].status == 'login_fail')
+			            		{
+			            			document.getElementById(email).classList.add("bg-gray");
+			            		}
+			            		$('#option-process').append('<option class="label label-process m-t-3 '+sts[data['message'][x].status]+'">'+data['message'][x].msg+'</option>');
+			            	}
+			            	renderTable(data['data'], email);
+			            	$('#dialogSearchLoading').modal('hide');
+			            },
+			            error: function (XMLHttpRequest, textStatus, errorThrown) {
+			            	$('#option-process').append('<option class="label label-process m-t-3 label-danger">'+email+' - Xảy ra lỗi với người dùng này</option>');
+			            	$('#dialogSearchLoading').modal('hide');
+			            }
+			        });
 			});
+
+
 
 			$(document).on("click", "#btn-refresh", function (){
 				$('#option-process').empty();
 			});
+
+			function renderTable(data, email)
+			{
+				$('.bt-data').empty();
+				let i = 0;
+		        while(i < data.length)
+		        {
+		            var item = data[i];
+		            var action = '<a href="javascript:void(0)" class="del-post" data-id="'+i+'" data-email="'+email+'" data-title="'+item['title']+'">Xóa</a> <br>';
+		            if(item['renew'] == 1)
+		            {
+		            	action += ' <a href="javascript:void(0)" class="renew-post" data-id="'+i+'" data-email="'+email+'" data-title="'+item['title']+'">'+item['renew_text']+'</a>';
+		            }
+		            else
+		            {
+		            	action+= ''+item['renew_text'];
+		            }
+		            if(item['delete'] == 0)
+		            {
+		            	action = 'Không tác động được';
+		            }
+		            var str =	'<tr>'
+		                            +'<td class="text-center">'+(i+1)+'</td>'
+		                            +'<td>'+item['title']+'</td>'
+		                            +'<td>'+item['price']+'</td>'
+		                            +'<td>'+item['status']+'</td>'
+		                            +'<td>'+item['view']+'</td>'
+		                            +'<td>'+item['info']+'</td>'
+		                            +'<td class="text-center">'+action+'</td>'
+		                        +'</tr>';
+		            $('.bt-data').append(str);
+		            i++;
+		        }
+			}
+
+			$(document).on("click", ".renew-post", function (){
+				$('#dialogSearchLoading').modal('show');
+				let id = $(this).data('id');
+				let session = $('input[name="session"]').val();
+				let email = $(this).data('email');
+				let title = $(this).data('title');
+				$.ajax({
+		            type: "post",
+		            dataType: "json",
+		            data: {id: id, session: session, email: email, title: title},
+		            url:"http://localhost/auto-fb/post_renew.php",
+		            beforeSend: function(xhr) {
+		                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		            },
+		            success: function (data) {
+		            	for(let x = 0; x < data['message'].length; x++)
+		            	{
+		            		$('#option-process').append('<option class="label label-process m-t-3 '+sts[data['message'][x].status]+'">'+data['message'][x].msg+'</option>');
+		            	}
+		            	renderTable(data['data'], email);
+		            	$('#dialogSearchLoading').modal('hide');
+		            },
+		            error: function (XMLHttpRequest, textStatus, errorThrown) {
+		            	$('#option-process').append('<option class="label label-process m-t-3 label-danger">'+email+' - Xảy ra lỗi với người dùng này</option>');
+		            	$('#dialogSearchLoading').modal('hide');
+		            }
+		        });
+			});
+
+			$(document).on("click", ".del-post", function (){
+				$('#dialogSearchLoading').modal('show');
+				let id = $(this).data('id');
+				let session = $('input[name="session"]').val();
+				let email = $(this).data('email');
+				let title = $(this).data('title');
+				$.ajax({
+		            type: "post",
+		            dataType: "json",
+		            data: {id: id, session: session, email: email, title: title},
+		            url:"http://localhost/auto-fb/post_delete.php",
+		            beforeSend: function(xhr) {
+		                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		            },
+		            success: function (data) {
+		            	for(let x = 0; x < data['message'].length; x++)
+		            	{
+		            		$('#option-process').append('<option class="label label-process m-t-3 '+sts[data['message'][x].status]+'">'+data['message'][x].msg+'</option>');
+		            	}
+		            	renderTable(data['data'], email);
+		            	$('#dialogSearchLoading').modal('hide');
+		            },
+		            error: function (XMLHttpRequest, textStatus, errorThrown) {
+		            	$('#option-process').append('<option class="label label-process m-t-3 label-danger">'+email+' - Xảy ra lỗi với người dùng này</option>');
+		            	$('#dialogSearchLoading').modal('hide');
+		            }
+		        });
+			});
+
 		});
 		
 	</script>

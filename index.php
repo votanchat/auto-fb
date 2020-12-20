@@ -97,6 +97,7 @@ $session = $driver->getSessionID();
 <body>
 	<section class="content" style="min-height: 0px;">
 		<a href="messenger.php" class="btn btn-primary" target="_blank">Tin nhắn</a>
+		<a href="posts.php" class="btn btn-primary" target="_blank">Quản lý bài đăng</a>
 	</section>
 
 	<form role="form" id="form-input" method="post" enctype="multipart/form-data">
@@ -105,7 +106,7 @@ $session = $driver->getSessionID();
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Sản phẩm</a></li>
 				<li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">Tài khoản</a></li>
-				<li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="true">Link ảnh</a></li>
+				<li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="true">Link thư mục ảnh</a></li>
 				<li class=""><a href="#tab_4" data-toggle="tab" aria-expanded="true">Vị trí</a></li>
 				<li class=""><a href="#tab_5" data-toggle="tab" aria-expanded="true">Thẻ tag</a></li>
 			</ul>
@@ -302,13 +303,8 @@ xả hàng</textarea>
 				<div class="tab-pane" id="tab_3">
 					<div class="box-body">
 						<div class="form-group">
-							<span class="label label-primary bd-r-0">Mỗi dòng một ảnh</span>
-							<textarea class="form-control min-h-text" rows="3" name="images" placeholder="" required>C:\Users\ITSJ\OneDrive\Desktop\giay\FortaRun_AC_K_trang_FY1554_01_standard.jpg
-C:\Users\ITSJ\OneDrive\Desktop\giay\Giay_Mickey_4uture_Sport_AC_Mau_tim_FV4256_01_standard.jpg
-C:\Users\ITSJ\OneDrive\Desktop\giay\Giay_Mickey_4uture_Sport_AC_trang_FV4255_01_standard.jpg
-C:\Users\ITSJ\OneDrive\Desktop\giay\Giay_Pulseboost_HD_trang_EF0914_01_standard.jpg
-C:\Users\ITSJ\OneDrive\Desktop\giay\Giay_Runfalcon_2.0_DJen_FY9494_01_standard.jpg
-C:\Users\ITSJ\OneDrive\Desktop\giay\Giay_Runfalcon_2.0_trang_FY9496_01_standard.jpg</textarea>
+							<span class="label label-primary bd-r-0">Một thư mục duy nhất</span>
+							<textarea class="form-control min-h-text" rows="3" name="images" placeholder="" required>C:\Users\ITSJ\OneDrive\Desktop\giay\</textarea>
 							<div id="error__images">
 
 							</div>
@@ -373,6 +369,13 @@ tagname3</textarea>
 		</div>
 	</section>
 	</form>
+	<div class="modal modal-full fade" id="dialogSearchLoading" role="dialog" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog">
+			<div class="modal-content align-items-center justify-content-center">
+				<img src="assets/dist/img/loading.gif" alt="Loading" class="img-fluid">        
+			</div>
+		</div>
+	</div>
 
 	<!-- jQuery 3 -->
 	<script src="assets/bower_components/jquery/dist/jquery.min.js"></script>
@@ -414,14 +417,22 @@ tagname3</textarea>
 				let accounts = multipleLinesToArray($('form#form-input :input[name="accounts"]').val());
 				if(accounts.length > 0)
 				{
-					beforeProcess()
+					$('#dialogSearchLoading').modal('show');
 				}
 
 				for (let i = 0; i < accounts.length; i++)
 		    	{
+		    		user = {email: 'a', pass: 'a', check: '0'};
 		    		let tmp = splitEmailPass(accounts[i]);
-		    		user = {email: tmp[0], pass: tmp[1], check: '0'};
-		    		if(tmp.includes(2) != 'undefined')
+		    		if(typeof tmp[0] !== 'undefined')
+		    		{
+		    			user.email = tmp[0];
+		    		}
+		    		if(typeof tmp[1] !== 'undefined')
+		    		{
+		    			user.pass = tmp[1];
+		    		}
+		    		if(typeof tmp[2] !== 'undefined')
 		    		{
 		    			user.check = tmp[2];
 		    		}
@@ -447,14 +458,14 @@ tagname3</textarea>
 			            	}
 			            	if(i == accounts.length - 1)
 			            	{
-			            		afterProcess();
+			            		$('#dialogSearchLoading').modal('hide');
 			            	}
 			            },
 			            error: function (XMLHttpRequest, textStatus, errorThrown) {
 			            	$('#option-process').append('<option class="label label-process m-t-3 label-danger">'+user.email+' - Xảy ra lỗi với người dùng này</option>');
 			            	if(i == accounts.length - 1)
 			            	{
-			            		afterProcess();
+			            		$('#dialogSearchLoading').modal('hide');
 			            	}
 			            }
 			        });
@@ -464,24 +475,6 @@ tagname3</textarea>
 			$(document).on("click", ".del-user", function () {
 				$(this).parent().remove();
 			});
-
-			function beforeProcess()
-			{
-				$('#btn-refresh').addClass('d-none');
-		        $('#icon-processing').removeClass('d-none');
-		        $('#btn-login').empty();
-		        $('#btn-login').addClass('not-active');
-		        $('#btn-login').append('<i class="fa fa-spinner"></i>');
-			}
-
-			function afterProcess()
-			{
-				$('#btn-refresh').removeClass('d-none');
-				$('#icon-processing').addClass('d-none');
-				$('#btn-login').empty();
-				$('#btn-login').removeClass('not-active');
-				$('#btn-login').append('<i class="fa fa-play"></i>');
-			}
 		})
 	</script>
 	<script type="text/javascript">
@@ -515,6 +508,25 @@ tagname3</textarea>
 			return lines;
 		}
 
+		function getAllfile(path)
+		{
+			return $.ajax({
+	            type: "post",
+	            dataType: "json",
+	            data: {path: path},
+	            url:"http://localhost/auto-fb/get_images.php",
+	            beforeSend: function(xhr) {
+	                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	            },
+	            success: function (data) {
+	            	images = data;
+	            },
+	            error: function (XMLHttpRequest, textStatus, errorThrown) {
+	           		images = [];
+	            }
+	        });
+		}
+
 		function getInput()
 		{
 			let session = $('input[name="session"]').val();
@@ -536,8 +548,12 @@ tagname3</textarea>
 	        $('#option-process').empty();
 	    });
 
-	    async function foreachLocation(inputs, accounts, locations, images)
+	    async function foreachLocation(inputs, accounts, locations)
 		{
+			$('#dialogSearchLoading').modal('show');
+			let path = $('form#form-input :input[name="images"]').val();
+			let images = await getAllfile(path);
+			
 			for(let x = 0; x < locations.length; x++)
 			{
 				await sleep(delay_location*1000);
@@ -546,11 +562,7 @@ tagname3</textarea>
 				inputs.images = imgs_tmp;
 				await foreachAccount(inputs, accounts);
 			}
-	    	$('#btn-publish').removeAttr("disabled", true);
-	    	$('#btn-reset').removeAttr("disabled", true);
-	    	$('#btn-refresh').removeClass('d-none');
-	    	$('#icon-processing').addClass('d-none');
-	    	$('#btn-cancel').addClass('d-none');
+			$('#dialogSearchLoading').modal('hide');
 		}
 
 		async function foreachAccount(inputs, accounts)
@@ -675,11 +687,6 @@ tagname3</textarea>
 	        errorElement: 'p',
 	        errorClass: 'label-error',
 	        submitHandler: function(form) {
-	            $('#btn-publish').attr("disabled", true);
-		        $('#btn-reset').attr("disabled", true);
-		        $('#btn-refresh').addClass('d-none');
-		        $('#icon-processing').removeClass('d-none');
-		        $('#btn-cancel').removeClass('d-none');
 		        delay_location = $('input[name="delay_location"]').val();
 		        delay_account = $('input[name="delay_account"]').val();
 		        number_image = $('input[name="number_image"]').val();
@@ -688,9 +695,7 @@ tagname3</textarea>
 		    	let accounts = $('.list-group').children();
 		    	let locations = $('form#form-input :input[name="locations"]').val();
 		    	locations =  multipleLinesToArray(locations);
-		    	let images = $('form#form-input :input[name="images"]').val();
-		    	images = multipleLinesToArray(images);
-		    	foreachLocation(inputs, accounts, locations, images);
+		    	foreachLocation(inputs, accounts, locations);
 	        }
 	    });
 	</script>
