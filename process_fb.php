@@ -138,7 +138,7 @@ try {
 	endSession($response, $input_values);
 }
 $images = $input_values['images'];
-if(empty($images))
+if(empty($images) || count($images) < $input_values['number_image'])
 {
 	$response[] = [
 		'status' => 'fail',

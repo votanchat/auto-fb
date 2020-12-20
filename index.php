@@ -541,7 +541,7 @@ tagname3</textarea>
 			titles1 = multipleLinesToArray(titles1);
 			titles2 = multipleLinesToArray(titles2);
 			tags = multipleLinesToArray(tags);
-			return {session: session,titles1: titles1, titles2: titles2, price: price, category: category, condition: condition, brand: brand, location: null, images: null, description: description, tags: tags, email: null};
+			return {session: session,titles1: titles1, titles2: titles2, price: price, category: category, condition: condition, brand: brand, location: null, images: null, number_image: number_image, description: description, tags: tags, email: null};
 		}
 
 		$('#btn-refresh').click(function () {
