@@ -609,7 +609,7 @@ tagname3</textarea>
 		function randomImages(images)
 		{
 			let result = [];
-			shuffle(images);
+			// shuffle(images);
 			let img_lent = images.length;
 			for(let y = 0; y < img_lent; y++)
 			{
