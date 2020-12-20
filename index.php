@@ -559,6 +559,10 @@ tagname3</textarea>
 				await sleep(delay_location*1000);
 				inputs.location = locations[x];
 				let imgs_tmp = randomImages(images);
+				if(imgs_tmp.length == 0)
+				{
+					break;	
+				}
 				inputs.images = imgs_tmp;
 				await foreachAccount(inputs, accounts);
 			}
