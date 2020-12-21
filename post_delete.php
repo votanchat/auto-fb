@@ -92,7 +92,6 @@ try {
 }
 
 $items_r = [];
-$element_end = null;
 foreach ($items as $key => $item) {
 	$tmp = ['title' => '', 'price' => '', 'status' => '', 'info' => 'Bài viết đã được niêm yết', 'view' => '', 'delete' => 0, 'renew' => 0, 'renew_text' => ''];
 	try {
@@ -135,7 +134,6 @@ foreach ($items as $key => $item) {
 		$item_del = $item->findElement(WebDriverBy::cssSelector('.oajrlxb2.tdjehn4e.gcieejh5.bn081pho.humdl8nn.izx4hr6d.rq0escxv.nhd2j8a9.j83agx80.p7hjln8o.kvgmc6g5.cxmmr5t8.oygrvhab.hcukyx3x.jb3vyjys.hv4rvrfc.qt6c0cv9.dati1w0a.i1ao9s8h.esuyzwwr.f1sip0of.lzcic4wl.l9j0dhe7.abiwlrkh.p8dawk7l.beltcj47.p86d2i9g.aot14ch1.kzx2olss.cbu4d94t.taijpn5t.ni8dbmo4.stjgntxs.k4urcfbm.tv7at329[role="button"]'));
 		$tmp['delete'] = 1;
 
-		$element_end = $item_del;
 		$driver->executeScript("arguments[0].focus();", [$item_del]);
 		$driver->executeScript("arguments[0].click();", [$item_del]);
 
@@ -152,6 +150,7 @@ foreach ($items as $key => $item) {
 		}
 		$driver->executeScript("arguments[0].focus();", [$item_del]);
 		$driver->executeScript("arguments[0].click();", [$item_del]);
+		
 	} catch (Exception $e) {
 		
 	}

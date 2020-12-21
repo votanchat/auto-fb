@@ -550,7 +550,7 @@ tagname3</textarea>
 
 	    async function foreachLocation(inputs, accounts, locations)
 		{
-			$('#dialogSearchLoading').modal('show');
+			beforeProcess();
 			let path = $('form#form-input :input[name="images"]').val();
 			let images = await getAllfile(path);
 			
@@ -566,7 +566,25 @@ tagname3</textarea>
 				inputs.images = imgs_tmp;
 				await foreachAccount(inputs, accounts);
 			}
-			$('#dialogSearchLoading').modal('hide');
+			afterProcess();
+		}
+
+		function beforeProcess()
+		{
+			$('#btn-refresh').addClass('d-none');
+	        $('#icon-processing').removeClass('d-none');
+	        $('#btn-login').empty();
+	        $('#btn-login').addClass('not-active');
+	        $('#btn-login').append('<i class="fa fa-spinner"></i>');
+		}
+
+		function afterProcess()
+		{
+			$('#btn-refresh').removeClass('d-none');
+			$('#icon-processing').addClass('d-none');
+			$('#btn-login').empty();
+			$('#btn-login').removeClass('not-active');
+			$('#btn-login').append('<i class="fa fa-play"></i>');
 		}
 
 		async function foreachAccount(inputs, accounts)
