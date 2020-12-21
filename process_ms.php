@@ -14,8 +14,8 @@ $session = $_GET['session'];
 $driver = RemoteWebDriver::createBySessionID($session, $host);
 
 $cookies = [];
-$driver->get('https://www.messenger.com');
 $driver->manage()->deleteAllCookies();
+$driver->get('https://www.messenger.com');
 if(file_exists('cookie_ms/'.$email.'.txt'))
 {
 	$cookies = file_get_contents('cookie_ms/'.$email.'.txt');
@@ -29,7 +29,6 @@ if(is_array($cookies))
 	}
 }
 $driver->get('https://www.messenger.com');
-sleep(2);
 $response = ['info' => ['email' => $email, 'image' => ''], 'message' => ['status' => 'login_fail', 'msg' =>  $email.' - Đăng nhập thất bại']];
 
 try {

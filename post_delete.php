@@ -19,6 +19,8 @@ $response['message'][] = [
 	'status' => 'success',
 	'msg' => $email.' - Bắt đầu xóa bài'
 ];
+
+// get items
 $items = [];
 try {
 	$items = $driver->findElements(WebDriverBy::cssSelector('.cwj9ozl2.ue3kfks5.pw54ja7n.uo3d90p7.l82x9zwi.o16s864r.sej5wr8e.m8hsej2k.k4urcfbm.rnsnyeob'));
@@ -28,6 +30,8 @@ try {
 		'msg' => $email.' - Không tìm thấy bài đăng nào'
 	];
 }
+
+// delete item
 if(isset($items[$id]))
 {
 	try {
@@ -48,7 +52,16 @@ if(isset($items[$id]))
 		$btn_del_confirm = $driver->findElement(WebDriverBy::cssSelector('[aria-label="Xóa"].oajrlxb2.s1i5eluu.gcieejh5.bn081pho.humdl8nn.izx4hr6d.rq0escxv.nhd2j8a9.j83agx80.p7hjln8o.kvgmc6g5.cxmmr5t8.oygrvhab.hcukyx3x.jb3vyjys.d1544ag0.qt6c0cv9.tw6a2znq.i1ao9s8h.esuyzwwr.f1sip0of.lzcic4wl.l9j0dhe7.abiwlrkh.p8dawk7l.beltcj47.p86d2i9g.aot14ch1.kzx2olss.cbu4d94t.taijpn5t.ni8dbmo4.stjgntxs.k4urcfbm.tv7at329'));
 		$driver->executeScript("arguments[0].focus();", [$btn_del_confirm]);
 		$driver->executeScript("arguments[0].click();", [$btn_del_confirm]);
-		sleep(5);
+		try {
+			$btn_close = $driver->wait(1)->until(
+				WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('[aria-label="Đóng"].oajrlxb2.tdjehn4e.qu0x051f.esr5mh6w.e9989ue4.r7d6kgcz.rq0escxv.nhd2j8a9.j83agx80.p7hjln8o.kvgmc6g5.cxmmr5t8.oygrvhab.hcukyx3x.jb3vyjys.rz4wbd8a.qt6c0cv9.a8nywdso.i1ao9s8h.esuyzwwr.f1sip0of.lzcic4wl.l9j0dhe7.abiwlrkh.p8dawk7l.bp9cbjyn.s45kfl79.emlxlaya.bkmhp75w.spb7xbtv.rt8b4zig.n8ej3o3l.agehan2d.sk4xxmp2.taijpn5t.tv7at329.thwo4zme'))
+			);
+			$driver->executeScript("arguments[0].focus();", [$btn_close]);
+			$driver->executeScript("arguments[0].click();", [$btn_close]);
+		} catch (Exception $e) {
+			
+		}
+		sleep(4);
 		$response['message'][] = [
 			'status' => 'success',
 			'msg' => $email.' - Đã xóa: '.$title
@@ -56,7 +69,7 @@ if(isset($items[$id]))
 	} catch (Exception $e) {
 		$response['message'][] = [
 			'status' => 'fail',
-			'msg' => $email.' - Xãy ra lỗi trong quá trình xóa bài'
+			'msg' => $email.' - Xãy ra lỗi trong quá trình xóa bài, hãy tải lại danh sách bài đăng hoặc liên hệ chúng tôi'
 		];
 	}
 }
@@ -68,6 +81,7 @@ else
 	];
 }
 
+// reload data
 try {
 	$items = $driver->findElements(WebDriverBy::cssSelector('.cwj9ozl2.ue3kfks5.pw54ja7n.uo3d90p7.l82x9zwi.o16s864r.sej5wr8e.m8hsej2k.k4urcfbm.rnsnyeob'));
 } catch (Exception $e) {
@@ -78,6 +92,7 @@ try {
 }
 
 $items_r = [];
+$element_end = null;
 foreach ($items as $key => $item) {
 	$tmp = ['title' => '', 'price' => '', 'status' => '', 'info' => 'Bài viết đã được niêm yết', 'view' => '', 'delete' => 0, 'renew' => 0, 'renew_text' => ''];
 	try {
@@ -120,6 +135,7 @@ foreach ($items as $key => $item) {
 		$item_del = $item->findElement(WebDriverBy::cssSelector('.oajrlxb2.tdjehn4e.gcieejh5.bn081pho.humdl8nn.izx4hr6d.rq0escxv.nhd2j8a9.j83agx80.p7hjln8o.kvgmc6g5.cxmmr5t8.oygrvhab.hcukyx3x.jb3vyjys.hv4rvrfc.qt6c0cv9.dati1w0a.i1ao9s8h.esuyzwwr.f1sip0of.lzcic4wl.l9j0dhe7.abiwlrkh.p8dawk7l.beltcj47.p86d2i9g.aot14ch1.kzx2olss.cbu4d94t.taijpn5t.ni8dbmo4.stjgntxs.k4urcfbm.tv7at329[role="button"]'));
 		$tmp['delete'] = 1;
 
+		$element_end = $item_del;
 		$driver->executeScript("arguments[0].focus();", [$item_del]);
 		$driver->executeScript("arguments[0].click();", [$item_del]);
 

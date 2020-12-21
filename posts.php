@@ -50,7 +50,7 @@ $capabilities = DesiredCapabilities::chrome();
 /*-------------------------------------------Start process-----------------------------------------------*/
 $chromeOptions = new ChromeOptions();
 $chromeOptions->addArguments(['--no-sandbox', '--disable-gpu', '--disable-notifications']);
-$chromeOptions->addArguments(['--headless']); //on | off chrome
+// $chromeOptions->addArguments(['--headless']); //on | off chrome
 /*-------------------------------------------Open chrome-----------------------------------------------*/
 $capabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
 /*-------------------------------------------Host-----------------------------------------------*/
@@ -63,7 +63,7 @@ $session = $driver->getSessionID();
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Auto FB</title>
+	<title>Quản lý bài đăng</title>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 

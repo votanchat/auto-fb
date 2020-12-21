@@ -19,6 +19,7 @@ $response['message'][] = [
 	'status' => 'success',
 	'msg' => $email.' - Bắt đầu gia hạn'
 ];
+//get items
 $items = [];
 try {
 	$items = $driver->findElements(WebDriverBy::cssSelector('.cwj9ozl2.ue3kfks5.pw54ja7n.uo3d90p7.l82x9zwi.o16s864r.sej5wr8e.m8hsej2k.k4urcfbm.rnsnyeob'));
@@ -28,6 +29,7 @@ try {
 		'msg' => $email.' - Không tìm thấy bài đăng nào'
 	];
 }
+//renew item
 if(isset($items[$id]))
 {
 	try {
@@ -42,13 +44,17 @@ if(isset($items[$id]))
 		$driver->executeScript("arguments[0].focus();", [$btn_dels[0]]);
 		$driver->executeScript("arguments[0].click();", [$btn_dels[0]]);
 
-		$driver->wait(3)->until(
-			WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('[aria-label="Đóng"]'))
-		);
-		$btn_del_confirm = $driver->findElement(WebDriverBy::cssSelector('[aria-label="Đóng"]'));
-		$driver->executeScript("arguments[0].focus();", [$btn_del_confirm]);
-		$driver->executeScript("arguments[0].click();", [$btn_del_confirm]);
-		sleep(5);
+		try {
+			$driver->wait(3)->until(
+				WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('[aria-label="Đóng"]'))
+			);
+			$btn_close = $driver->findElement(WebDriverBy::cssSelector('[aria-label="Đóng"]'));
+			$driver->executeScript("arguments[0].focus();", [$btn_close]);
+			$driver->executeScript("arguments[0].click();", [$btn_close]);
+		} catch (Exception $e) {
+			
+		}
+		sleep(4);
 		$response['message'][] = [
 			'status' => 'success',
 			'msg' => $email.' - Đã gia hạn: '.$title
@@ -56,7 +62,7 @@ if(isset($items[$id]))
 	} catch (Exception $e) {
 		$response['message'][] = [
 			'status' => 'fail',
-			'msg' => $email.' - Xãy ra lỗi trong quá trình gia hạn bài'
+			'msg' => $email.' - Xãy ra lỗi trong quá trình gia hạn bài, hãy tải lại danh sách bài đăng hoặc liên hệ chúng tôi'
 		];
 	}
 }
@@ -68,6 +74,7 @@ else
 	];
 }
 
+//reload data
 try {
 	$items = $driver->findElements(WebDriverBy::cssSelector('.cwj9ozl2.ue3kfks5.pw54ja7n.uo3d90p7.l82x9zwi.o16s864r.sej5wr8e.m8hsej2k.k4urcfbm.rnsnyeob'));
 } catch (Exception $e) {
@@ -152,7 +159,7 @@ function endSession($response, $email)
 {
 	$response['message'][] = [
 		'status' => 'success',
-		'msg' => $email.' - Kết thúc xóa bài'
+		'msg' => $email.' - Kết thúc gia hạn bài'
 	];
 	echo json_encode($response);
 	die;

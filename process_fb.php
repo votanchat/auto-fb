@@ -51,9 +51,8 @@ $response[] = [
 ];
 
 /*-------------------------------------------Login-----------------------------------------------*/
-$driver->get('https://facebook.com');
-sleep(2);
 $driver->manage()->deleteAllCookies();
+$driver->get('https://facebook.com');
 $cookies = [];
 if(file_exists('cookie_fb/'.$input_values['email'].'.txt'))
 {

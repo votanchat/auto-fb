@@ -96,6 +96,15 @@ try {
 		'status' => 'success',
 		'msg' => $user['email'].' - Đăng nhập lần đầu thành công'
 	];
+	$lang = getLang($driver->getPageSource());
+	if($lang != 'vi')
+	{
+		$response['message'] = [
+			'status' => 'fail',
+			'msg' => $user['email'].' - Rất tiết chúng tôi chỉ sử dụng tài khoản Tiếng Việt (vi)'
+		];
+		endSession($response, $driver);
+	}
 	//save cookie
 	$file_name = 'cookie_fb/'.$user['email'].'.txt';
 	$cookies = $driver->manage()->getCookies();
@@ -131,4 +140,11 @@ function endSession($response, $driver)
 	$driver->quit();
 	echo json_encode($response);
 	die;
+}
+
+function getLang($sources)
+{
+    preg_match('/lang="(.*?)"/', $sources, $matches);
+
+    return $matches[1];
 }

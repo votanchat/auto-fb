@@ -16,12 +16,12 @@ $response['message'][] = [
 	'status' => 'success',
 	'msg' => $email.' - Bắt đầu'
 ];
-
+$items_r = [];
+$response['data'] = $items_r;
 
 $cookies = [];
-$driver->get('https://facebook.com');
-sleep(2);
 $driver->manage()->deleteAllCookies();
+$driver->get('https://facebook.com');
 if(file_exists('cookie_fb/'.$email.'.txt'))
 {
 	$cookies = file_get_contents('cookie_fb/'.$email.'.txt');
@@ -47,7 +47,7 @@ try {
 } catch (Exception $e) {
 	$file_name = 'sts_fb/'.$email.'.txt';
 	file_put_contents($file_name, 'fail');
-	$response[] = [
+	$response['message'][] = [
 		'status' => 'login_fail',
 		'msg' => $email.' - Đăng nhập thất bại'
 	];
@@ -88,7 +88,7 @@ while ($current < count($items)) {
 		
 	}
 }
-$items_r = [];
+
 foreach ($items as $key => $item) {
 	$tmp = ['title' => '', 'price' => '', 'status' => '', 'info' => 'Bài viết đã được niêm yết', 'view' => '', 'delete' => 0, 'renew' => 0, 'renew_text' => ''];
 	try {
@@ -153,9 +153,7 @@ foreach ($items as $key => $item) {
 
 	$items_r[] = $tmp;
 }
-
 $response['data'] = $items_r;
-
 /*-------------------------------------------End process-----------------------------------------------*/
 endSession($response, $email);
 
