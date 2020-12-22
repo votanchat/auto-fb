@@ -126,3 +126,7 @@
     background-color: #fff;
     opacity: 0.7;
 }
+
+.nav-tabs-custom>.nav-tabs>li.red.active {
+    border-top-color: #bc3c3c !important;
+}

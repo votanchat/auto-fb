@@ -7,6 +7,8 @@ use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 
+
+// get user
 $users = [];
 $dir = 'cookie_fb';
 if ($handle = opendir($dir))
@@ -44,14 +46,22 @@ foreach ($users as $key => $value)
 	}
 }
 $users = array_values($users);
-// dump($users);
+
+// get input
+$inputs = [];
+if(file_exists('input.txt'))
+{
+	$inputs = file_get_contents('input.txt');
+	$inputs = unserialize($inputs);
+}
+
 /*-------------------------------------------Create host-----------------------------------------------*/
 $host = 'http://localhost:4444';
 $capabilities = DesiredCapabilities::chrome();
 /*-------------------------------------------Start process-----------------------------------------------*/
 $chromeOptions = new ChromeOptions();
 $chromeOptions->addArguments(['--no-sandbox', '--disable-gpu', '--disable-notifications']);
-$chromeOptions->addArguments(['--headless']); //on | off chrome
+// $chromeOptions->addArguments(['--headless']); //on | off chrome
 /*-------------------------------------------Open chrome-----------------------------------------------*/
 $capabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
 /*-------------------------------------------Host-----------------------------------------------*/
@@ -105,23 +115,18 @@ $session = $driver->getSessionID();
 		<div class="nav-tabs-custom">
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Sản phẩm</a></li>
-				<li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false">Tài khoản</a></li>
-				<li class=""><a href="#tab_3" data-toggle="tab" aria-expanded="true">Link thư mục ảnh</a></li>
 				<li class=""><a href="#tab_4" data-toggle="tab" aria-expanded="true">Vị trí</a></li>
 				<li class=""><a href="#tab_5" data-toggle="tab" aria-expanded="true">Thẻ tag</a></li>
+				<li class="red"><a href="#tab_2" data-toggle="tab" aria-expanded="false">Tài khoản</a></li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="tab_1">
 					<div class="row">
-
-						<div class="col-md-6">
+						<div class="col-md-3">
 							<div class="box-body">
 								<div class="form-group">
 									<span class="label label-primary bd-r-0">Tiêu đề 1</span>
-									<textarea class="form-control min-h-title" rows="3" name="titles1" placeholder="" required>Giày
-Giày Quảng Ngãi
-Giày nam, nữ
-Giày da</textarea>
+									<textarea class="form-control min-h-title" rows="3" name="titles1" placeholder="" required><?php echo isset($inputs['titles1']) ? $inputs['titles1'] : ''; ?></textarea>
 									<div id="error__titles1">
 
 									</div>
@@ -129,19 +134,42 @@ Giày da</textarea>
 								</div>
 							</div>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-3">
 							<div class="box-body">
 								<div class="form-group">
 									<span class="label label-primary bd-r-0">Tiêu đề 2</span>
-									<textarea class="form-control min-h-title" rows="3" name="titles2" placeholder="" required>xuất khẩu
-thanh lý
-xả hàng</textarea>
+									<textarea class="form-control min-h-title" rows="3" name="titles2" placeholder="" required><?php echo isset($inputs['titles2']) ? $inputs['titles2'] : ''; ?></textarea>
 									<div id="error__titles2">
 
 									</div>
 								</div>
 							</div>
 						</div>
+
+						<div class="col-md-3">
+							<div class="box-body">
+								<div class="form-group">
+									<span class="label label-primary bd-r-0">Mô tả 1</span>
+									<textarea class="form-control min-h-title" rows="3" name="descriptions1" placeholder="" required><?php echo isset($inputs['descriptions1']) ? $inputs['descriptions1'] : ''; ?></textarea>
+									<div id="error__descriptions1">
+
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="box-body">
+								<div class="form-group">
+									<span class="label label-primary bd-r-0">Mô tả 2</span>
+									<textarea class="form-control min-h-title" rows="3" name="descriptions2" placeholder="" required><?php echo isset($inputs['descriptions2']) ? $inputs['descriptions2'] : ''; ?></textarea>
+									<div id="error__descriptions2">
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
 
 						<div class="col-md-6">
 							<div class="box-body">
@@ -150,7 +178,7 @@ xả hàng</textarea>
 									<div class="col-md-6">
 										<div class="form-group">
 											<span class="label label-primary bd-r-0">Giá</span>
-											<input type="number" class="form-control" name="price" min="1" max="100000000" placeholder="" required value="50000">
+											<input type="number" class="form-control" name="price" min="1" max="100000000" placeholder="" required value="<?php echo isset($inputs['price']) ? $inputs['price'] : ''; ?>">
 											<div id="error__price">
 
 											</div>
@@ -160,31 +188,31 @@ xả hàng</textarea>
 										<div class="form-group">
 											<span class="label label-primary bd-r-0">Hạng mục</span>
 											<select class="form-control" name="category" required>
-												<option value="0">Công cụ</option>
-												<option value="1">Nội thất</option>
-												<option value="2">Hộ gia đình</option>
-												<option value="3">Vườn</option>
-												<option value="4">Thiết bị</option>
+												<option value="0" <?php echo isset($inputs['category']) && $inputs['category'] == 0 ? 'selected' : ''; ?>>Công cụ</option>
+												<option value="1" <?php echo isset($inputs['category']) && $inputs['category'] == 1 ? 'selected' : ''; ?>>Nội thất</option>
+												<option value="2" <?php echo isset($inputs['category']) && $inputs['category'] == 2 ? 'selected' : ''; ?>>Hộ gia đình</option>
+												<option value="3" <?php echo isset($inputs['category']) && $inputs['category'] == 3 ? 'selected' : ''; ?>>Vườn</option>
+												<option value="4" <?php echo isset($inputs['category']) && $inputs['category'] == 4 ? 'selected' : ''; ?>>Thiết bị</option>
 												<option value="5" disabled="true">Trò chơi điện tử</option>
-												<option value="6">Sách phim nhạc</option>
-												<option value="7">Túi & hành lý</option>
-												<option value="8">Quần áo & giày dép nữ</option>
-												<option value="9">Quần áo & giày dép nam</option>
-												<option value="10">Trang sức & phụ kiện</option>
-												<option value="11">Sức khỏe và làm đẹp</option>
-												<option value="12">Đồ dùng cho thứ cưng</option>
-												<option value="13">Trẻ sơ sinh và trẻ nhỏ</option>
-												<option value="14">Đồ chơi và trò chơi</option>
-												<option value="15">Điện tử điện máy</option>
+												<option value="6" <?php echo isset($inputs['category']) && $inputs['category'] == 6 ? 'selected' : ''; ?>>Sách phim nhạc</option>
+												<option value="7" <?php echo isset($inputs['category']) && $inputs['category'] == 7 ? 'selected' : ''; ?>>Túi & hành lý</option>
+												<option value="8" <?php echo isset($inputs['category']) && $inputs['category'] == 8 ? 'selected' : ''; ?>>Quần áo & giày dép nữ</option>
+												<option value="9" <?php echo isset($inputs['category']) && $inputs['category'] == 9 ? 'selected' : ''; ?>>Quần áo & giày dép nam</option>
+												<option value="10" <?php echo isset($inputs['category']) && $inputs['category'] == 10 ? 'selected' : ''; ?>>Trang sức & phụ kiện</option>
+												<option value="11" <?php echo isset($inputs['category']) && $inputs['category'] == 11 ? 'selected' : ''; ?>>Sức khỏe và làm đẹp</option>
+												<option value="12" <?php echo isset($inputs['category']) && $inputs['category'] == 12 ? 'selected' : ''; ?>>Đồ dùng cho thứ cưng</option>
+												<option value="13" <?php echo isset($inputs['category']) && $inputs['category'] == 13 ? 'selected' : ''; ?>>Trẻ sơ sinh và trẻ nhỏ</option>
+												<option value="14" <?php echo isset($inputs['category']) && $inputs['category'] == 14 ? 'selected' : ''; ?>>Đồ chơi và trò chơi</option>
+												<option value="15" <?php echo isset($inputs['category']) && $inputs['category'] == 15 ? 'selected' : ''; ?>>Điện tử điện máy</option>
 												<option value="16" disabled="true">Điện thoại di động</option>
-												<option value="17">Xe đạp</option>
-												<option value="18">Thủ công mỹ nghệ</option>
-												<option value="19">Thể thao và hoạt động ngoài trời</option>
-												<option value="20">Phụ tùng xe hơi</option>
-												<option value="21">Nhạc cụ</option>
-												<option value="22">Đồ cổ & bộ sự tập</option>
-												<option value="23">Thanh lý đồ cũ</option>
-												<option value="24">Hỗn hợp</option>
+												<option value="17" <?php echo isset($inputs['category']) && $inputs['category'] == 17 ? 'selected' : ''; ?>>Xe đạp</option>
+												<option value="18" <?php echo isset($inputs['category']) && $inputs['category'] == 18 ? 'selected' : ''; ?>>Thủ công mỹ nghệ</option>
+												<option value="19" <?php echo isset($inputs['category']) && $inputs['category'] == 19 ? 'selected' : ''; ?>>Thể thao và hoạt động ngoài trời</option>
+												<option value="20" <?php echo isset($inputs['category']) && $inputs['category'] == 20 ? 'selected' : ''; ?>>Phụ tùng xe hơi</option>
+												<option value="21" <?php echo isset($inputs['category']) && $inputs['category'] == 21 ? 'selected' : ''; ?>>Nhạc cụ</option>
+												<option value="22" <?php echo isset($inputs['category']) && $inputs['category'] == 22 ? 'selected' : ''; ?>>Đồ cổ & bộ sự tập</option>
+												<option value="23" <?php echo isset($inputs['category']) && $inputs['category'] == 23 ? 'selected' : ''; ?>>Thanh lý đồ cũ</option>
+												<option value="24" <?php echo isset($inputs['category']) && $inputs['category'] == 24 ? 'selected' : ''; ?>>Hỗn hợp</option>
 											</select>
 											<div id="error__category">
 
@@ -197,7 +225,7 @@ xả hàng</textarea>
 									<div class="col-md-6">
 										<div class="form-group">
 											<span class="label label-primary bd-r-0">Thương hiệu</span>
-											<input type="text" class="form-control" name="brand" placeholder="" required value="Thương hiệu">
+											<input type="text" class="form-control" name="brand" placeholder="" required value="<?php echo isset($inputs['brand']) ? $inputs['brand'] : ''; ?>">
 											<div id="error__brand">
 
 											</div>
@@ -207,10 +235,10 @@ xả hàng</textarea>
 										<div class="form-group">
 											<span class="label label-primary bd-r-0">Tình trạng</span>
 											<select class="form-control" name="condition" required>
-												<option value="0">Mới</option>
-												<option value="1">Đã qua sử dụng - Như mới</option>
-												<option value="2">Đã qua sử dụng - Tốt</option>
-												<option value="3">Đã qua sử dụng - Khá tốt</option>
+												<option value="0" <?php echo isset($inputs['condition']) && $inputs['condition'] == 0 ? 'selected' : ''; ?>>Mới</option>
+												<option value="1" <?php echo isset($inputs['condition']) && $inputs['condition'] == 1 ? 'selected' : ''; ?>>Đã qua sử dụng - Như mới</option>
+												<option value="2" <?php echo isset($inputs['condition']) && $inputs['condition'] == 2 ? 'selected' : ''; ?>>Đã qua sử dụng - Tốt</option>
+												<option value="3" <?php echo isset($inputs['condition']) && $inputs['condition'] == 3 ? 'selected' : ''; ?>>Đã qua sử dụng - Khá tốt</option>
 											</select>
 											<div id="error__condition">
 
@@ -227,9 +255,9 @@ xả hàng</textarea>
 								<div class="row">
 									<div class="col-md-6">
 										<div class="form-group">
-											<span class="label label-primary bd-r-0">Mô tả</span>
-											<textarea class="form-control min-h-des" rows="3" name="description" placeholder="" required>Sản phẩm phân phối chất lượng cao</textarea>
-											<div id="error__description">
+											<span class="label label-primary bd-r-0">Số lượng ảnh một bài đăng</span>
+											<input type="number" class="form-control" name="number_image" min="1" max="100000000" placeholder="" required value="<?php echo isset($inputs['number_image']) ? $inputs['number_image'] : ''; ?>">
+											<div id="error__number_image">
 
 											</div>
 										</div>
@@ -238,7 +266,7 @@ xả hàng</textarea>
 										<div class="col-md-6">
 											<div class="form-group">
 												<span class="label label-primary bd-r-0">Delay Vị trí</span>
-												<input type="number" class="form-control" name="delay_location" min="0" max="100000000" placeholder="" required value="0">
+												<input type="number" class="form-control" name="delay_location" min="0" max="100000000" placeholder="" required value="<?php echo isset($inputs['delay_location']) ? $inputs['delay_location'] : ''; ?>">
 												<div id="error__delay_account">
 
 												</div>
@@ -247,19 +275,21 @@ xả hàng</textarea>
 										<div class="col-md-6">
 											<div class="form-group">
 												<span class="label label-primary bd-r-0">Delay Tài khoản</span>
-												<input type="number" class="form-control" name="delay_account" min="0" max="100000000" placeholder="" required value="5">
+												<input type="number" class="form-control" name="delay_account" min="0" max="100000000" placeholder="" required value="<?php echo isset($inputs['delay_account']) ? $inputs['delay_account'] : ''; ?>">
 												<div id="error__delay_account">
 
 												</div>
 											</div>
 										</div>
-										<div class="col-md-12">
-											<div class="form-group">
-												<span class="label label-primary bd-r-0">Số lượng ảnh một bài đăng</span>
-												<input type="number" class="form-control" name="number_image" min="1" max="100000000" placeholder="" required value="2">
-												<div id="error__number_image">
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-12">
+										<div class="form-group">
+											<span class="label label-primary bd-r-0">Thư mục ảnh</span>
+											<input type="text" class="form-control" name="images" placeholder="" required value="<?php echo isset($inputs['images']) ? $inputs['images'] : ''; ?>">
+											<div id="error__images">
 
-												</div>
 											</div>
 										</div>
 									</div>
@@ -269,7 +299,31 @@ xả hàng</textarea>
 
 					</div>
 				</div>
-					
+
+				<div class="tab-pane" id="tab_4">
+					<div class="box-body">
+						<div class="form-group">
+							<span class="label label-primary bd-r-0">Mỗi dòng một vị trí</span>
+							<textarea class="form-control min-h-text" name="locations" rows="3" placeholder="" required><?php echo isset($inputs['locations']) ? $inputs['locations'] : ''; ?></textarea>
+							<div id="error__locations">
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="tab-pane" id="tab_5">
+					<div class="box-body">
+						<div class="form-group">
+							<span class="label label-primary bd-r-0">Mỗi dòng một tag (tối đa 20)</span>
+							<textarea class="form-control min-h-text" rows="3" name="tags" placeholder="" required><?php echo isset($inputs['tags']) ? $inputs['tags'] : ''; ?></textarea>
+							<div id="error__tags">
+
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<div class="tab-pane" id="tab_2">
 					<div class="box-body">
 						<div class="row">
@@ -295,46 +349,6 @@ xả hàng</textarea>
 										<?php } ?>
 									</ul>
 								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="tab-pane" id="tab_3">
-					<div class="box-body">
-						<div class="form-group">
-							<span class="label label-primary bd-r-0">Một thư mục duy nhất</span>
-							<textarea class="form-control min-h-text" rows="3" name="images" placeholder="" required>C:\Users\ITSJ\OneDrive\Desktop\giay\</textarea>
-							<div id="error__images">
-
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="tab-pane" id="tab_4">
-					<div class="box-body">
-						<div class="form-group">
-							<span class="label label-primary bd-r-0">Mỗi dòng một vị trí</span>
-							<textarea class="form-control min-h-text" name="locations" rows="3" placeholder="" required>Hồ Chí Minh
-Binh Thanh, Ho Chi Minh City
-Thủ Dầu Một</textarea>
-							<div id="error__locations">
-
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="tab-pane" id="tab_5">
-					<div class="box-body">
-						<div class="form-group">
-							<span class="label label-primary bd-r-0">Mỗi dòng một tag (tối đa 20)</span>
-							<textarea class="form-control min-h-text" rows="3" name="tags" placeholder="" required>tagname
-tagname2
-tagname3</textarea>
-							<div id="error__tags">
-
 							</div>
 						</div>
 					</div>
@@ -527,21 +541,60 @@ tagname3</textarea>
 	        });
 		}
 
+		function saveInput()
+		{
+			var titles1 = $('form#form-input :input[name="titles1"]').val();
+			var titles2 = $('form#form-input :input[name="titles2"]').val();
+			var descriptions1 = $('form#form-input :input[name="descriptions1"]').val();
+			var descriptions2 = $('form#form-input :input[name="descriptions2"]').val();
+			var price = $('form#form-input :input[name="price"]').val();
+			var category = $('form#form-input :input[name="category"]').val();
+			var condition = $('form#form-input :input[name="condition"]').val();
+			var brand = $('form#form-input :input[name="brand"]').val();
+			var number_image = $('form#form-input :input[name="number_image"]').val();
+			var delay_location = $('form#form-input :input[name="delay_location"]').val();
+			var delay_account = $('form#form-input :input[name="delay_account"]').val();
+			var images = $('form#form-input :input[name="images"]').val();
+			var tags = $('form#form-input :input[name="tags"]').val();
+			var locations = $('form#form-input :input[name="locations"]').val();
+
+			var inputs = {titles1: titles1, titles2: titles2, descriptions1: descriptions1, descriptions2: descriptions2, price: price, category: category, condition: condition, brand: brand, number_image: number_image, delay_location: delay_location, delay_account: delay_account, images: images, tags: tags, locations: locations};
+
+			return $.ajax({
+	            type: "post",
+	            dataType: "json",
+	            data: inputs,
+	            url:"http://localhost/auto-fb/save_input.php",
+	            beforeSend: function(xhr) {
+	                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	            },
+	            success: function (data) {
+	            	
+	            },
+	            error: function (XMLHttpRequest, textStatus, errorThrown) {
+	           		
+	            }
+	        });
+		}
+
 		function getInput()
 		{
 			let session = $('input[name="session"]').val();
 			var titles1 = $('form#form-input :input[name="titles1"]').val();
 			var titles2 = $('form#form-input :input[name="titles2"]').val();
+			var descriptions1 = $('form#form-input :input[name="descriptions1"]').val();
+			var descriptions2 = $('form#form-input :input[name="descriptions2"]').val();
 			var price = $('form#form-input :input[name="price"]').val();
 			var category = $('form#form-input :input[name="category"]').val();
 			var condition = $('form#form-input :input[name="condition"]').val();
 			var brand = $('form#form-input :input[name="brand"]').val();
-			var description = $('form#form-input :input[name="description"]').val();
 			var tags = $('form#form-input :input[name="tags"]').val();
 			titles1 = multipleLinesToArray(titles1);
 			titles2 = multipleLinesToArray(titles2);
+			descriptions1 = multipleLinesToArray(descriptions1);
+			descriptions2 = multipleLinesToArray(descriptions2);
 			tags = multipleLinesToArray(tags);
-			return {session: session,titles1: titles1, titles2: titles2, price: price, category: category, condition: condition, brand: brand, location: null, images: null, number_image: number_image, description: description, tags: tags, email: null};
+			return {session: session,titles1: titles1, titles2: titles2, price: price, category: category, condition: condition, brand: brand, location: null, images: null, number_image: number_image, descriptions1: descriptions1, descriptions2: descriptions2, tags: tags, email: null};
 		}
 
 		$('#btn-refresh').click(function () {
@@ -551,9 +604,9 @@ tagname3</textarea>
 	    async function foreachLocation(inputs, accounts, locations)
 		{
 			beforeProcess();
+			await saveInput();
 			let path = $('form#form-input :input[name="images"]').val();
 			let images = await getAllfile(path);
-			
 			for(let x = 0; x < locations.length; x++)
 			{
 				await sleep(delay_location*1000);

@@ -256,7 +256,8 @@ try {
 	$driver->wait(5)->until(
 		WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector($input_names['description']))
 	);
-	$driver->findElement(WebDriverBy::cssSelector($input_names['description']))->click()->sendKeys($input_values['description']);
+	$description = randomArray($input_values['descriptions1']).' '.randomArray($input_values['descriptions2']);
+	$driver->findElement(WebDriverBy::cssSelector($input_names['description']))->click()->sendKeys($description);
 } catch (Exception $e) {
 	$response[] = [
 		'status' => 'fail',
