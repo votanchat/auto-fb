@@ -165,7 +165,7 @@ try {
 	$driver->wait(5)->until(
 	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector($input_names['title']))
 	);
-	$title = randomArray($input_values['titles1']).' '.randomArray($input_values['titles2']).' ,'.$input_values['location'];
+	$title = randomArray($input_values['titles1']).' '.randomArray($input_values['titles2']).', '.$input_values['location'];
 	$driver->findElement(WebDriverBy::cssSelector($input_names['title']))->click()->sendKeys($title);
 } catch (Exception $e) {
 	$response[] = [

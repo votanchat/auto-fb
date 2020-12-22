@@ -36,7 +36,7 @@ $driver->findElement(WebDriverBy::id('pass'))
 
 $fa_check = false;
 try {
-	$driver->wait(5)->until(
+	$driver->wait(3)->until(
 	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('input[name="approvals_code"]'))
 	);
 	$fa_check = true;
@@ -89,7 +89,7 @@ if($fa_check == true)
 }
 
 try {
-	$driver->wait(5)->until(
+	$driver->wait(3)->until(
 	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('.l9j0dhe7.tr9rh885.buofh1pr.cbu4d94t.j83agx80'))
 	);
 	$response['message'] = [
