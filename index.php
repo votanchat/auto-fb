@@ -61,7 +61,7 @@ $capabilities = DesiredCapabilities::chrome();
 /*-------------------------------------------Start process-----------------------------------------------*/
 $chromeOptions = new ChromeOptions();
 $chromeOptions->addArguments(['--no-sandbox', '--disable-gpu', '--disable-notifications']);
-// $chromeOptions->addArguments(['--headless']); //on | off chrome
+$chromeOptions->addArguments(['--headless']); //on | off chrome
 /*-------------------------------------------Open chrome-----------------------------------------------*/
 $capabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
 /*-------------------------------------------Host-----------------------------------------------*/
