@@ -34,12 +34,11 @@ if(is_array($cookies))
 		$driver->manage()->addCookie($cookie);
 	}
 }
-$driver->get('https://m.facebook.com/marketplace');
+$driver->get('https://m.facebook.com/groups_browse/your_groups/');
 try {
 	$driver->wait(5)->until(
-	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('[aria-label="Đang bán"][role="button"]'))
+	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('[aria-label="Nhóm"]'))
 	);
-	$driver->findElement(WebDriverBy::cssSelector('[aria-label="Đang bán"][role="button"]'))->click();
 	$response['message'][] = [
 		'status' => 'success',
 		'msg' => $email.' - Đăng nhập thành công'
@@ -65,21 +64,21 @@ while ($current < count($items)) {
 	
 	try {
 		$driver->wait(5)->until(
-		    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('._a5o._9_7._2rgt._1j-f._2rgt[style="flex-grow:0;flex-shrink:1;margin:0 0 16px 0"]'))
+		    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('._7hkf._3qn7._61-3._2fyi._3qng:not(._3-8n)'))
 		);
 
-		$items = $driver->findElements(WebDriverBy::cssSelector('._a5o._9_7._2rgt._1j-f._2rgt[style="flex-grow:0;flex-shrink:1;margin:0 0 16px 0"]'));
+		$items = $driver->findElements(WebDriverBy::cssSelector('._7hkf._3qn7._61-3._2fyi._3qng:not(._3-8n)'));
 	} catch (Exception $e) {
 		$response['message'][] = [
-			'status' => 'success',
-			'msg' => $email.' - Không tìm thấy bài đăng nào'
+			'status' => 'fail',
+			'msg' => $email.' - Không tìm thấy bài nhóm nào'
 		];
 		endSession($response, $email);
 	}
 }
   
 foreach ($items as $key => $item) {
-	$tmp = ['image' => '', 'title' => '', 'price' => '', 'status' => '', 'info' => 'Bài viết đã được niêm yết'];
+	$tmp = ['id' => '', 'image' => '', 'title' => '', 'status' => ''];
 	try {
 		$image = $item->findElement(WebDriverBy::cssSelector('img'))->getAttribute('src');
 		$tmp['image'] = $image;
@@ -88,29 +87,22 @@ foreach ($items as $key => $item) {
 	}
 
 	try {
-		$title = $item->findElement(WebDriverBy::cssSelector('._59k._2rgt._1j-f._2rgt._3zi4._2rgt._1j-f._2rgt[style="flex-grow:0;flex-shrink:1;font-size: 14px;font-weight: 400;line-height: 18px;text-align: left;color: #1D2129"]'))->getAttribute('innerText');
+		$title = $item->findElement(WebDriverBy::cssSelector('._52je._52jb._52jh'))->getAttribute('innerText');
 		$tmp['title'] = $title;
 	} catch (Exception $e) {
 		
 	}
 
 	try {
-		$price = $item->findElement(WebDriverBy::cssSelector('[style="display: inline;text-decoration: "]'))->getAttribute('innerText');
-		$tmp['price'] = $price;
-	} catch (Exception $e) {
-		
-	}
-
-	try {
-		$status = $item->findElement(WebDriverBy::cssSelector('._59k._2rgt._1j-f._2rgt._3zi4._2rgt._1j-f._2rgt[style="flex-grow:0;flex-shrink:1;font-size: 12px;font-weight: 400;text-align: left;color: #8A8D91"]'))->getAttribute('innerText');
+		$status = $item->findElement(WebDriverBy::cssSelector('._52jd._52j9'))->getAttribute('innerText');
 		$tmp['status'] = $status;
 	} catch (Exception $e) {
 		
 	}
 
 	try {
-		$info = $item->findElement(WebDriverBy::cssSelector('._a58._9_7._2rgt._1j-f._2rgt._3zi4._2rgt._1j-f._2rgt'))->getAttribute('innerText');
-		$tmp['info'] = $info;
+		$id = $item->findElement(WebDriverBy::cssSelector('a'))->getAttribute('href');
+		$tmp['id'] = $id;
 	} catch (Exception $e) {
 		
 	}
