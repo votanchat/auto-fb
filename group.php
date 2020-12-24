@@ -44,6 +44,14 @@ foreach ($users as $key => $value)
 }
 $users = array_values($users);
 // dump($users);
+// get input
+$inputs = [];
+if(file_exists('input_group.txt'))
+{
+	$inputs = file_get_contents('input_group.txt');
+	$inputs = unserialize($inputs);
+}
+
 /*-------------------------------------------Create host-----------------------------------------------*/
 $host = 'http://localhost:4444';
 $capabilities = DesiredCapabilities::chrome();
@@ -95,6 +103,7 @@ $session = $driver->getSessionID();
 	<link rel="stylesheet" href="assets/plugins/iCheck/all.css">
 </head>
 <body>
+	<form role="form" id="form-input" method="post" enctype="multipart/form-data">
 	<section class="content">
 		<div class="nav-tabs-custom">
 			<ul class="nav nav-tabs">
@@ -116,7 +125,7 @@ $session = $driver->getSessionID();
 							<div class="form-group">
 								<span class="label label-primary bd-r-0">Link ảnh (mỗi dòng 1 ảnh)</span>
 								<textarea class="form-control min-h-title" rows="3" name="images" placeholder="" required><?php echo isset($inputs['images']) ? $inputs['images'] : ''; ?></textarea>
-								<div id="error__titles1">
+								<div id="error__images">
 
 								</div>
 							</div>
@@ -158,6 +167,7 @@ $session = $driver->getSessionID();
 			</div>
 		</div>
 	</section>
+	</form>
 
 	<section id="process" class="content">
 		<div class="box box-info">
@@ -370,11 +380,33 @@ $session = $driver->getSessionID();
 
 			function getInput()
 			{
-				var images = $('input[name="images"]').val();
-				var title = $('input[name="title"]').val();
+				var images = $('form#form-input :input[name="images"]').val();
+				var title = $('form#form-input :input[name="title"]').val();
 				images = multipleLinesToArray(images);
 
 				return {title: title, images: images};
+			}
+
+			function saveInput()
+			{
+				var images = $('form#form-input :input[name="images"]').val();
+				var title = $('form#form-input :input[name="title"]').val();
+				var inputs =  {title: title, images: images};
+				return $.ajax({
+		            type: "post",
+		            dataType: "json",
+		            data: inputs,
+		            url:"http://localhost/auto-fb/save_input_group.php",
+		            beforeSend: function(xhr) {
+		                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		            },
+		            success: function (data) {
+		            	
+		            },
+		            error: function (XMLHttpRequest, textStatus, errorThrown) {
+		           		
+		            }
+		        });
 			}
 
 			$('input[name="check_all"]').click(function(){
@@ -387,14 +419,18 @@ $session = $driver->getSessionID();
 					ids.push($(this).val());
 				});
 				let session = $('input[name="session"]').val();
-				let email = $(this).data('email');
+				let email = $(this).attr('data-email');
 				let inputs = getInput();
-				foreachId(ids, session, email, inputs);
+				if(inputs['title'] != '')
+				{
+					foreachId(ids, session, email, inputs);
+				}
 			});
 
 			async function foreachId(ids, session, email, inputs)
 			{
 				beforeProcess();
+				await saveInput();
 				for(let i = 0; i < ids.length; i++)
 				{
 					await sendRequest(ids[i], session, email, inputs);
