@@ -13,6 +13,7 @@ $host = 'http://localhost:4444';
 $id = $_POST['id'];
 $session = $_POST['session'];
 $email = $_POST['email'];
+$inputs = $_POST['inputs'];
 $driver = RemoteWebDriver::createBySessionID($session, $host);
 $response['message'][] = [
 	'status' => 'success',
@@ -36,13 +37,12 @@ try {
 		$driver->wait(5)->until(
 			WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('.composerInput.mentions-input'))
 		);
-		$driver->findElement(WebDriverBy::cssSelector('.composerInput.mentions-input'))->click()->sendKeys('Xin chao cac ban');
+		$driver->findElement(WebDriverBy::cssSelector('.composerInput.mentions-input'))->click()->sendKeys($inputs['title']);
 		try {
-			$images = ['C:\Users\ITSJ\OneDrive\Desktop\giay\1.jpg','C:\Users\ITSJ\OneDrive\Desktop\giay\2.jpg'];
 			$driver->wait(5)->until(
 				WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('input[accept^="image"]'))
 			);
-			foreach($images as $image)
+			foreach($inputs['images'] as $image)
 			{
 				$input_image = $driver->findElement(WebDriverBy::cssSelector('input[accept^="image"]'));
 				$input_image->sendKeys($image);
@@ -89,7 +89,7 @@ function endSession($response, $email)
 {
 	$response['message'][] = [
 		'status' => 'success',
-		'msg' => $email.' - Kết thúc'
+		'msg' => $email.' - Kết thúc đăng bài'
 	];
 	echo json_encode($response);
 	die;

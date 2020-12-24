@@ -14,7 +14,7 @@ $session = $_GET['session'];
 $driver = RemoteWebDriver::createBySessionID($session, $host);
 $response['message'][] = [
 	'status' => 'success',
-	'msg' => $email.' - Bắt đầu'
+	'msg' => $email.' - Bắt đầu lấy danh sách nhóm'
 ];
 $items_r = [];
 $response['data'] = $items_r;
@@ -39,10 +39,6 @@ try {
 	$driver->wait(5)->until(
 	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('[aria-label="Nhóm"]'))
 	);
-	$response['message'][] = [
-		'status' => 'success',
-		'msg' => $email.' - Đăng nhập thành công'
-	];
 	$file_name = 'sts_fb/'.$email.'.txt';
 	file_put_contents($file_name, 'success');
 } catch (Exception $e) {
@@ -71,7 +67,7 @@ while ($current < count($items)) {
 	} catch (Exception $e) {
 		$response['message'][] = [
 			'status' => 'fail',
-			'msg' => $email.' - Không tìm thấy bài nhóm nào'
+			'msg' => $email.' - Không tìm thấy nhóm nào'
 		];
 		endSession($response, $email);
 	}
@@ -117,7 +113,7 @@ function endSession($response, $email)
 {
 	$response['message'][] = [
 		'status' => 'success',
-		'msg' => $email.' - Kết thúc'
+		'msg' => $email.' - Kết thúc lấy danh sách nhóm'
 	];
 	echo json_encode($response);
 	die;

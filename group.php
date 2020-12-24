@@ -95,38 +95,69 @@ $session = $driver->getSessionID();
 	<link rel="stylesheet" href="assets/plugins/iCheck/all.css">
 </head>
 <body>
-	<form role="form" id="form-input" method="post" action="login_message.php" enctype="multipart/form-data">
-	<section class="content" style="min-height: 0px;">
-		<div class="box-body">
-			<div class="row">
-				<div class="col-md-5">
-					<div class="form-group">
-						<span class="label label-primary bd-r-0">Tài khoản / Mật khẩu</span>
-						<textarea class="form-control min-h-text" name="accounts" rows="3" placeholder="" required></textarea>
+	<section class="content">
+		<div class="nav-tabs-custom">
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Nội dung bài đăng</a></li>
+				<li class="red"><a href="#tab_2" data-toggle="tab" aria-expanded="false">Tài khoản</a></li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active" id="tab_1">
+					<div class="row">
+						<div class="box-body">
+							<div class="form-group">
+								<span class="label label-primary bd-r-0">Bạn đang nghĩ gì?</span>
+								<textarea class="form-control min-h-title" rows="3" name="title" placeholder="" required><?php echo isset($inputs['title']) ? $inputs['title'] : ''; ?></textarea>
+								<div id="error__title">
+
+								</div>
+								<input type="hidden" name="session" value="<?php echo $session; ?>">
+							</div>
+							<div class="form-group">
+								<span class="label label-primary bd-r-0">Link ảnh (mỗi dòng 1 ảnh)</span>
+								<textarea class="form-control min-h-title" rows="3" name="images" placeholder="" required><?php echo isset($inputs['images']) ? $inputs['images'] : ''; ?></textarea>
+								<div id="error__titles1">
+
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="col-md-2">
-					<div class="form-group min-h-btn p-t-80">
-						<a class="btn btn-app p-t-19" id="btn-login">
-							<i class="fa fa-play"></i>
-						</a>
+
+				<div class="tab-pane" id="tab_2">
+					<div class="box-body">
+						<div class="row">
+							<div class="col-md-5">
+								<div class="form-group">
+									<span class="label label-primary bd-r-0">Tài khoản / Mật khẩu</span>
+									<textarea class="form-control min-h-text" name="accounts" rows="3" placeholder="" required></textarea>
+								</div>
+							</div>
+							<div class="col-md-2">
+								<div class="form-group min-h-btn p-t-80">
+									<a class="btn btn-app p-t-19" id="btn-login">
+										<i class="fa fa-play"></i>
+									</a>
+								</div>
+							</div>
+							<div class="col-md-5">
+								<div class="form-group">
+									<span class="label label-primary bd-r-0">Tài khoản đã đăng nhập thành công</span>
+									<ul class="list-group">
+										<?php foreach($users as $key => $user){ ?>
+										<li id="<?php echo $user['email']; ?>" class="list-group-item <?php if($user['status'] == 'fail'){ echo 'bg-gray'; } ?>"><a class="img-ms" data-id="<?php echo $user['email']; ?>" href="javascript:void(0)"><img src="<?php echo $user['image'] ?>" style="width: 18px; height: 18px; border-radius: 50%;"></a> <?php echo $user['email']; ?><a href="javascript:void(0)" class="pull-right del-user">x</a></li>
+										<?php } ?>
+									</ul>
+									<input type="hidden" name="session" value="<?php echo $session; ?>">
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="col-md-5">
-					<div class="form-group">
-						<span class="label label-primary bd-r-0">Tài khoản đã đăng nhập thành công</span>
-						<ul class="list-group">
-							<?php foreach($users as $key => $user){ ?>
-							<li id="<?php echo $user['email']; ?>" class="list-group-item <?php if($user['status'] == 'fail'){ echo 'bg-gray'; } ?>"><a class="img-ms" data-id="<?php echo $user['email']; ?>" href="javascript:void(0)"><img src="<?php echo $user['image'] ?>" style="width: 18px; height: 18px; border-radius: 50%;"></a> <?php echo $user['email']; ?><a href="javascript:void(0)" class="pull-right del-user">x</a></li>
-							<?php } ?>
-						</ul>
-						<input type="hidden" name="session" value="<?php echo $session; ?>">
-					</div>
-				</div>
+
 			</div>
 		</div>
 	</section>
-	</form>
 
 	<section id="process" class="content">
 		<div class="box box-info">
@@ -337,6 +368,15 @@ $session = $driver->getSessionID();
 		        }
 			}
 
+			function getInput()
+			{
+				var images = $('input[name="images"]').val();
+				var title = $('input[name="title"]').val();
+				images = multipleLinesToArray(images);
+
+				return {title: title, images: images};
+			}
+
 			$('input[name="check_all"]').click(function(){
 				$("input[type=checkbox]").prop('checked', $(this).prop('checked'));
 			});
@@ -348,25 +388,26 @@ $session = $driver->getSessionID();
 				});
 				let session = $('input[name="session"]').val();
 				let email = $(this).data('email');
-				foreachId(ids, session, email);
+				let inputs = getInput();
+				foreachId(ids, session, email, inputs);
 			});
 
-			async function foreachId(ids, session, email)
+			async function foreachId(ids, session, email, inputs)
 			{
 				beforeProcess();
 				for(let i = 0; i < ids.length; i++)
 				{
-					await sendRequest(ids[i], session, email);
+					await sendRequest(ids[i], session, email, inputs);
 				}
 				afterProcess();
 			}
 
-			function sendRequest(id, session, email)
+			function sendRequest(id, session, email, inputs)
 			{
 				return $.ajax({
 		            type: "post",
 		            dataType: "json",
-		            data: {id: id, session: session, email: email},
+		            data: {id: id, session: session, email: email, inputs: inputs},
 		            url:"http://localhost/auto-fb/group_publish.php",
 		            beforeSend: function(xhr) {
 		                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -390,6 +431,7 @@ $session = $driver->getSessionID();
 		        $('#btn-login').empty();
 		        $('#btn-login').addClass('not-active');
 		        $('#btn-login').append('<i class="fa fa-spinner"></i>');
+		        $('.del-all').addClass('d-none');
 			}
 
 			function afterProcess()
@@ -399,6 +441,7 @@ $session = $driver->getSessionID();
 				$('#btn-login').empty();
 				$('#btn-login').removeClass('not-active');
 				$('#btn-login').append('<i class="fa fa-play"></i>');
+				$('.del-all').removeClass('d-none');
 			}
 
 		});

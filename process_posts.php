@@ -14,7 +14,7 @@ $session = $_GET['session'];
 $driver = RemoteWebDriver::createBySessionID($session, $host);
 $response['message'][] = [
 	'status' => 'success',
-	'msg' => $email.' - Bắt đầu'
+	'msg' => $email.' - Bắt đầu lấy danh sách bài đăng'
 ];
 $items_r = [];
 $response['data'] = $items_r;
@@ -40,10 +40,6 @@ try {
 	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('[aria-label="Đang bán"][role="button"]'))
 	);
 	$driver->findElement(WebDriverBy::cssSelector('[aria-label="Đang bán"][role="button"]'))->click();
-	$response['message'][] = [
-		'status' => 'success',
-		'msg' => $email.' - Đăng nhập thành công'
-	];
 	$file_name = 'sts_fb/'.$email.'.txt';
 	file_put_contents($file_name, 'success');
 } catch (Exception $e) {
@@ -125,7 +121,7 @@ function endSession($response, $email)
 {
 	$response['message'][] = [
 		'status' => 'success',
-		'msg' => $email.' - Kết thúc'
+		'msg' => $email.' - Kết thúc lấy danh sách bài đăng'
 	];
 	echo json_encode($response);
 	die;
