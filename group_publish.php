@@ -64,6 +64,10 @@ try {
 					);
 					$url = $driver->findElement(WebDriverBy::cssSelector('a._6rap.inv'))->getAttribute('href');
 					$data ='{"title": "'.$inputs['title'].'", "group": "'.$title.'", "url": "'.$url.'"}'."\r\n";
+					if(!is_dir('db_post/'))
+					{
+						mkdir('db_post');
+					}
 					$file_name = 'db_post/'.$email.'.txt';
 					file_put_contents($file_name, $data, FILE_APPEND | LOCK_EX);
 				} catch (Exception $e) {

@@ -106,6 +106,10 @@ foreach ($items as $key => $item) {
 	$items_r[] = $tmp;
 }
 $response['data'] = $items_r;
+if(!is_dir('db_group/'))
+{
+	mkdir('db_group');
+}
 $file_name = 'db_group/'.$email.'.txt';
 $serialized = serialize($response['data']);
 file_put_contents($file_name, $serialized);
