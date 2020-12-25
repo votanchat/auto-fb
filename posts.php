@@ -63,7 +63,7 @@ $session = $driver->getSessionID();
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Quản lý bài đăng</title>
+	<title>Xóa bài trong chợ</title>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 

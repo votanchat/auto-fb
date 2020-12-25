@@ -109,6 +109,7 @@ $session = $driver->getSessionID();
 		<a href="messenger.php" class="btn btn-primary" target="_blank">Tin nhắn</a>
 		<a href="posts.php" class="btn btn-primary" target="_blank">Xóa bài</a>
 		<a href="group.php" class="btn btn-primary" target="_blank">Đăng bài nhóm</a>
+		<a href="comment.php" class="btn btn-primary" target="_blank">Bình luận bài trong nhóm</a>
 	</section>
 
 	<form role="form" id="form-input" method="post" enctype="multipart/form-data">

@@ -16,9 +16,6 @@ $response['message'][] = [
 	'status' => 'success',
 	'msg' => $email.' - Bắt đầu lấy danh sách nhóm'
 ];
-$items_r = [];
-$response['data'] = $items_r;
-
 $cookies = [];
 $driver->manage()->deleteAllCookies();
 $driver->get('https://m.facebook.com');
@@ -51,65 +48,14 @@ try {
 	endSession($response, $email);
 }
 
-$items = [];
-$current = -1;
-while ($current < count($items)) {
-	$current = count($items);
-	$driver->executeScript('window.scrollTo(0,document.body.scrollHeight)');
-	sleep(2);
-	
-	try {
-		$driver->wait(5)->until(
-		    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('._7hkf._3qn7._61-3._2fyi._3qng:not(._3-8n)'))
-		);
-
-		$items = $driver->findElements(WebDriverBy::cssSelector('._7hkf._3qn7._61-3._2fyi._3qng:not(._3-8n)'));
-	} catch (Exception $e) {
-		$response['message'][] = [
-			'status' => 'fail',
-			'msg' => $email.' - Không tìm thấy nhóm nào'
-		];
-		endSession($response, $email);
-	}
-}
-  
-foreach ($items as $key => $item) {
-	$tmp = ['id' => '', 'image' => '', 'title' => '', 'status' => ''];
-	try {
-		$image = $item->findElement(WebDriverBy::cssSelector('img'))->getAttribute('src');
-		$tmp['image'] = $image;
-	} catch (Exception $e) {
-		
-	}
-
-	try {
-		$title = $item->findElement(WebDriverBy::cssSelector('._52je._52jb._52jh'))->getAttribute('innerText');
-		$tmp['title'] = $title;
-	} catch (Exception $e) {
-		
-	}
-
-	try {
-		$status = $item->findElement(WebDriverBy::cssSelector('._52jd._52j9'))->getAttribute('innerText');
-		$tmp['status'] = $status;
-	} catch (Exception $e) {
-		
-	}
-
-	try {
-		$id = $item->findElement(WebDriverBy::cssSelector('a'))->getAttribute('href');
-		$tmp['id'] = $id;
-	} catch (Exception $e) {
-		
-	}
-
-	$items_r[] = $tmp;
-}
-$response['data'] = $items_r;
+//get data
+$response['data'] = [];
 $file_name = 'db_group/'.$email.'.txt';
-$serialized = serialize($response['data']);
-file_put_contents($file_name, $serialized);
-/*-------------------------------------------End process-----------------------------------------------*/
+if(file_exists($file_name))
+{
+	$data = file_get_contents($file_name);
+	$response['data'] = unserialize($data);
+} 
 endSession($response, $email);
 
 function endSession($response, $email)

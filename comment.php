@@ -71,7 +71,7 @@ $session = $driver->getSessionID();
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Đăng bài nhóm</title>
+	<title>Bình luận bài trong nhóm</title>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -107,7 +107,7 @@ $session = $driver->getSessionID();
 	<section class="content">
 		<div class="nav-tabs-custom">
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Nội dung bài đăng</a></li>
+				<li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Nội dung bình luận</a></li>
 				<li class="red"><a href="#tab_2" data-toggle="tab" aria-expanded="false">Tài khoản</a></li>
 			</ul>
 			<div class="tab-content">
@@ -200,9 +200,8 @@ $session = $driver->getSessionID();
 				<thead>
 					<tr>
 						<th rowspan="2" class="text-center" style="width: 30px; vertical-align: middle;">No</th>
-						<th rowspan="2" class="text-center" style="width: 20%; vertical-align: middle;">Tên nhóm</th>
-						<th rowspan="2" class="text-center" style="width: 11%; vertical-align: middle;">Ảnh</th>
-						<th rowspan="2" class="text-center" style="width: 20%; vertical-align: middle;">Thông tin nhóm</th>
+						<th rowspan="2" class="text-center" style="width: 20%; vertical-align: middle;">Nội dung đăng</th>
+						<th rowspan="2" class="text-center" style="width: 11%; vertical-align: middle;">Nhóm đăng</th>
 						<th rowspan="1" class="text-center" style="width: 10%;">
 							<a href="javascript:void(0)" class="del-all" data-email="">Đăng đã chọn</a>
 						</th>
@@ -326,39 +325,7 @@ $session = $driver->getSessionID();
 			            type: "post",
 			            dataType: "json",
 			            data: {},
-			            url:"http://localhost/auto-fb/group_get.php?session="+session+"&email="+email,
-			            beforeSend: function(xhr) {
-			                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-			            },
-			            success: function (data) {
-			            	for(let x = 0; x < data['message'].length; x++)
-			            	{
-			            		if(data['message'][x].status == 'login_fail')
-			            		{
-			            			document.getElementById(email).classList.add("bg-gray");
-			            		}
-			            		$('#option-process').append('<option class="label label-process m-t-3 '+sts[data['message'][x].status]+'">'+data['message'][x].msg+'</option>');
-			            	}
-			            	renderTable(data['data'], email);
-			            	$('#dialogSearchLoading').modal('hide');
-			            },
-			            error: function (XMLHttpRequest, textStatus, errorThrown) {
-			            	$('#option-process').append('<option class="label label-process m-t-3 label-danger">'+email+' - Xảy ra lỗi với người dùng này</option>');
-			            	$('#dialogSearchLoading').modal('hide');
-			            }
-			        });
-			});
-
-			$(document).on("click", ".btn-reload", function () {
-				$('#dialogSearchLoading').modal('show');
-				let session = $('form#form-input :input[name="session"]').val();
-				let email = $(this).data('email');
-
-				$.ajax({
-			            type: "post",
-			            dataType: "json",
-			            data: {},
-			            url:"http://localhost/auto-fb/process_group.php?session="+session+"&email="+email,
+			            url:"http://localhost/auto-fb/comment_get.php?session="+session+"&email="+email,
 			            beforeSend: function(xhr) {
 			                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 			            },
@@ -395,19 +362,15 @@ $session = $driver->getSessionID();
 				$('.total-data').append('Số lượng: '+data.length);
 				$('.bt-data').empty();
 				$('.del-all').attr('data-email', email);
-				$('.get-data').empty();
-				$('.get-data').append('<a class="btn-reload" href="javascript:void(0)" data-email="'+email+'">Tải lại danh sách ('+email+')</a>');
 				let i = 0;
 		        while(i < data.length)
 		        {
 		            var item = data[i];
-		            var action = '<input type="checkbox" name="ids[]" value="'+item['id']+'">';
-		            var image = '<img src="'+item['image']+'">'
+		            var action = '<input type="checkbox" name="ids[]" value="'+item['url']+'">';
 		            var str =	'<tr>'
 		                            +'<td class="text-center">'+(i+1)+'</td>'
 		                            +'<td>'+item['title']+'</td>'
-		                            +'<td class="text-center">'+image+'</td>'
-		                            +'<td>'+item['status']+'</td>'
+		                            +'<td>'+item['group']+'</td>'
 		                            +'<td class="text-center">'+action+'</td>'
 		                        +'</tr>';
 		            $('.bt-data').append(str);
@@ -451,22 +414,22 @@ $session = $driver->getSessionID();
 			});
 
 			$(document).on("click", ".del-all", function (){
-				let ids = [];
-				$('input[name="ids[]"]:checked').each(function(){
-					ids.push($(this).val());
-				});
-				let session = $('input[name="session"]').val();
-				let email = $(this).attr('data-email');
-				let inputs = getInput();
-				if(inputs['title'] != '')
-				{
-					foreachId(ids, session, email, inputs);
-				}
+				// let ids = [];
+				// $('input[name="ids[]"]:checked').each(function(){
+				// 	ids.push($(this).val());
+				// });
+				// let session = $('input[name="session"]').val();
+				// let email = $(this).attr('data-email');
+				// let inputs = getInput();
+				// if(inputs['title'] != '')
+				// {
+				// 	foreachId(ids, session, email, inputs);
+				// }
 			});
 
 			async function foreachId(ids, session, email, inputs)
 			{
-				beforeProcess();
+				// beforeProcess();
 				await saveInput();
 				for(let i = 0; i < ids.length; i++)
 				{

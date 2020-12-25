@@ -20,8 +20,7 @@ $response['message'][] = [
 	'msg' => $email.' - Bắt đầu đăng bài'
 ];
 
-$driver->get($id);
-				
+$driver->get($id);			
 try {
 	$driver->wait(5)->until(
 	    WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('._55wr._7om2._3m1m'))
@@ -56,10 +55,24 @@ try {
 					'status' => 'success',
 					'msg' => $email.' - Đă đăng: '.$title
 				];
+				try {
+					$driver->wait(15)->until(
+						WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('a._6rap.inv'))
+					);
+					$url = $driver->findElement(WebDriverBy::cssSelector('a._6rap.inv'))->getAttribute('href');
+					$data ='{"title": "'.$inputs['title'].'", "group": "'.$title.'", "url": "'.$url.'"}'."\r\n";
+					$file_name = 'db_post/'.$email.'.txt';
+					file_put_contents($file_name, $data, FILE_APPEND | LOCK_EX);
+				} catch (Exception $e) {
+					$response['message'][] = [
+						'status' => 'fail',
+						'msg' => $email.' - Không lấy được url bài đăng vừa rồi'
+					];
+				}
 			} catch (Exception $e) {
 				$response['message'][] = [
 					'status' => 'fail',
-					'msg' => $email.' - Không tin thấy chỗ xóa'
+					'msg' => $email.' - Không tin thấy nút đăng'
 				];
 			}
 		} catch (Exception $e) {
@@ -80,7 +93,6 @@ try {
 		'msg' => $email.' - Không tìm thấy chỗ đăng bài'
 	];
 }
-sleep(10);
 
 /*-------------------------------------------End process-----------------------------------------------*/
 endSession($response, $email);
