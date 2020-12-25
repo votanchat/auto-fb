@@ -46,9 +46,9 @@ $users = array_values($users);
 // dump($users);
 // get input
 $inputs = [];
-if(file_exists('input_group.txt'))
+if(file_exists('input_comment.txt'))
 {
-	$inputs = file_get_contents('input_group.txt');
+	$inputs = file_get_contents('input_comment.txt');
 	$inputs = unserialize($inputs);
 }
 
@@ -123,7 +123,7 @@ $session = $driver->getSessionID();
 								<input type="hidden" name="session" value="<?php echo $session; ?>">
 							</div>
 							<div class="form-group">
-								<span class="label label-primary bd-r-0">Link ảnh (mỗi dòng 1 ảnh)</span>
+								<span class="label label-primary bd-r-0">Link ảnh (Một ảnh duy nhất)</span>
 								<textarea class="form-control min-h-title" rows="3" name="images" placeholder="" required><?php echo isset($inputs['images']) ? $inputs['images'] : ''; ?></textarea>
 								<div id="error__images">
 
@@ -396,7 +396,7 @@ $session = $driver->getSessionID();
 		            type: "post",
 		            dataType: "json",
 		            data: inputs,
-		            url:"http://localhost/auto-fb/save_input_group.php",
+		            url:"http://localhost/auto-fb/save_input_comment.php",
 		            beforeSend: function(xhr) {
 		                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 		            },
@@ -414,22 +414,22 @@ $session = $driver->getSessionID();
 			});
 
 			$(document).on("click", ".del-all", function (){
-				// let ids = [];
-				// $('input[name="ids[]"]:checked').each(function(){
-				// 	ids.push($(this).val());
-				// });
-				// let session = $('input[name="session"]').val();
-				// let email = $(this).attr('data-email');
-				// let inputs = getInput();
-				// if(inputs['title'] != '')
-				// {
-				// 	foreachId(ids, session, email, inputs);
-				// }
+				let ids = [];
+				$('input[name="ids[]"]:checked').each(function(){
+					ids.push($(this).val());
+				});
+				let session = $('input[name="session"]').val();
+				let email = $(this).attr('data-email');
+				let inputs = getInput();
+				if(inputs['title'] != '')
+				{
+					foreachId(ids, session, email, inputs);
+				}
 			});
 
 			async function foreachId(ids, session, email, inputs)
 			{
-				// beforeProcess();
+				beforeProcess();
 				await saveInput();
 				for(let i = 0; i < ids.length; i++)
 				{
@@ -444,7 +444,7 @@ $session = $driver->getSessionID();
 		            type: "post",
 		            dataType: "json",
 		            data: {id: id, session: session, email: email, inputs: inputs},
-		            url:"http://localhost/auto-fb/group_publish.php",
+		            url:"http://localhost/auto-fb/comment_publish.php",
 		            beforeSend: function(xhr) {
 		                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 		            },

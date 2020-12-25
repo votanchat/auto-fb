@@ -41,10 +41,13 @@ try {
 			$driver->wait(5)->until(
 				WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('input[accept^="image"]'))
 			);
-			foreach($inputs['images'] as $image)
+			if(isset($inputs['images']))
 			{
-				$input_image = $driver->findElement(WebDriverBy::cssSelector('input[accept^="image"]'));
-				$input_image->sendKeys($image);
+				foreach($inputs['images'] as $image)
+				{
+					$input_image = $driver->findElement(WebDriverBy::cssSelector('input[accept^="image"]'));
+					$input_image->sendKeys($image);
+				}
 			}
 			try {
 				$driver->wait(5)->until(
