@@ -180,7 +180,7 @@ $session = $driver->getSessionID();
 									<div class="col-md-6">
 										<div class="form-group">
 											<span class="label label-primary bd-r-0">Giá</span>
-											<input type="number" class="form-control" name="price" min="1" max="100000000" placeholder="" required value="<?php echo isset($inputs['price']) ? $inputs['price'] : ''; ?>">
+											<input type="number" class="form-control" name="price" min="0" max="100000000" placeholder="" required value="<?php echo isset($inputs['price']) ? $inputs['price'] : ''; ?>">
 											<div id="error__price">
 
 											</div>
