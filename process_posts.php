@@ -75,7 +75,7 @@ while ($current < count($items)) {
 }
   
 foreach ($items as $key => $item) {
-	$tmp = ['image' => '', 'title' => '', 'price' => '', 'status' => '', 'info' => 'Bài viết đã được niêm yết'];
+	$tmp = ['image' => '', 'title' => '', 'price' => '', 'status' => '', 'info' => 'Bài viết đã được niêm yết', 'sts_info' => 0];
 	try {
 		$image = $item->findElement(WebDriverBy::cssSelector('img'))->getAttribute('src');
 		$tmp['image'] = $image;
@@ -107,6 +107,14 @@ foreach ($items as $key => $item) {
 	try {
 		$info = $item->findElement(WebDriverBy::cssSelector('._a58._9_7._2rgt._1j-f._2rgt._3zi4._2rgt._1j-f._2rgt'))->getAttribute('innerText');
 		$tmp['info'] = $info;
+	} catch (Exception $e) {
+		
+	}
+
+	try {
+		$info = $item->findElement(WebDriverBy::cssSelector('._a58._9_7._2rgt._1j-f._2rgt._3zi4._2rgt._1j-f._2rgt'));
+		$danger = $info->findElement(WebDriverBy::cssSelector('._k7v._2rgt._1j-f._2rgt._3zi4._2rgt._1j-f._2rgt.img'));
+		$tmp['sts_info'] = 1;
 	} catch (Exception $e) {
 		
 	}

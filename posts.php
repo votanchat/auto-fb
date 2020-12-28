@@ -168,6 +168,7 @@ $session = $driver->getSessionID();
 					<tr>
 						<th rowspan="1" class="text-center" style="width: 10%;">
 							<input type="checkbox" name="check_all">
+							<input type="checkbox" name="check_danger">
 						</th>
 					</tr>
 				</thead>
@@ -325,15 +326,20 @@ $session = $driver->getSessionID();
 		        while(i < data.length)
 		        {
 		            var item = data[i];
-		            var action = '<input type="checkbox" name="ids[]" value="'+i+'">';
-		            var image = '<img src="'+item['image']+'">'
+		            var action = '<input type="checkbox" name="ids[]" data-danger="'+item['sts_info']+'" value="'+i+'">';
+		            var image = '<img src="'+item['image']+'">';
+		            var css_info = '';
+		            if(item['sts_info'] == 1)
+		            {
+		            	css_info = 'style="color: red;"';
+		            }
 		            var str =	'<tr>'
 		                            +'<td class="text-center">'+(i+1)+'</td>'
 		                            +'<td>'+item['title']+'</td>'
 		                            +'<td>'+item['price']+'</td>'
 		                            +'<td>'+item['status']+'</td>'
 		                            +'<td class="text-center">'+image+'</td>'
-		                            +'<td>'+item['info']+'</td>'
+		                            +'<td '+css_info+'>'+item['info']+'</td>'
 		                            +'<td class="text-center">'+action+'</td>'
 		                        +'</tr>';
 		            $('.bt-data').append(str);
@@ -343,6 +349,10 @@ $session = $driver->getSessionID();
 
 			$('input[name="check_all"]').click(function(){
 				$("input[type=checkbox]").prop('checked', $(this).prop('checked'));
+			});
+
+			$('input[name="check_danger"]').click(function(){
+				$('input[type=checkbox][data-danger="1"]').prop('checked', $(this).prop('checked'));
 			});
 
 			$(document).on("click", ".del-all", function (){
