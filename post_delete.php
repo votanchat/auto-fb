@@ -46,6 +46,7 @@ foreach($items as $key => $item)
 					WebDriverExpectedCondition::presenceOfAllElementsLocatedBy(WebDriverBy::cssSelector('._5m_x.accelerate:not([style$="display: none;"])'))
 				);
 				$popup = $driver->findElement(WebDriverBy::cssSelector('._5m_x.accelerate:not([style$="display: none;"])'));
+				sleep(2);
 				$buttons = $popup->findElements(WebDriverBy::cssSelector('._54k8._55i1._58a0.touchable'));
 				$buttons[1]->click();
 
@@ -76,8 +77,8 @@ foreach($items as $key => $item)
 				'msg' => $email.' - Không tìm thấy Quản lý mặt hàng'
 			];
 		}
-		sleep(3);
 	}
+	sleep(1);
 }
 
 // reload data

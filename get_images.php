@@ -12,11 +12,9 @@ if ($handle = opendir($dir))
 }
 foreach ($files as $key => $value)
 {
-	if (preg_match("/jpg/i", $value)
-		|| preg_match("/jpeg/i", $value)
-		|| preg_match("/png/i", $value))
+	if (preg_match("/jpg/i", $value))
 	{
-	    $files[$key] = $dir.$value;
+	    $files[$key] = $value;
 	}
 	else
 	{

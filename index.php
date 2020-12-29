@@ -543,6 +543,27 @@ $session = $driver->getSessionID();
 	        });
 		}
 
+		function sortImages(arr, path)
+		{
+			let result = [];
+			for(let i = 0; i < arr.length; i++)
+			{
+				result.push(parseFloat(removeText(arr[i],'.jpg')));
+			}
+			result.sort(function(a,b) { return a - b;});
+			for(let i = 0; i < result.length; i++)
+			{
+				result[i] = path+result[i]+'.jpg';
+			}
+			return result;
+		}
+
+		function removeText(string, str)
+		{
+			string = string.replace(str,'');
+			return string;
+		}
+
 		function saveInput()
 		{
 			var titles1 = $('form#form-input :input[name="titles1"]').val();
@@ -609,6 +630,7 @@ $session = $driver->getSessionID();
 			await saveInput();
 			let path = $('form#form-input :input[name="images"]').val();
 			let images = await getAllfile(path);
+			images = sortImages(images, path);
 			for(let x = 0; x < locations.length; x++)
 			{
 				await sleep(delay_location*1000);
