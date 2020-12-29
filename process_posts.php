@@ -1,4 +1,5 @@
 <?php
+set_time_limit(500);
 require 'vendor/autoload.php';
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
