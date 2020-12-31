@@ -54,7 +54,7 @@ if(file_exists('input.txt'))
 	$inputs = file_get_contents('input.txt');
 	$inputs = unserialize($inputs);
 }
-
+// dump($inputs);die;
 /*-------------------------------------------Create host-----------------------------------------------*/
 $host = 'http://localhost:4444';
 $capabilities = DesiredCapabilities::chrome();
@@ -116,19 +116,20 @@ $session = $driver->getSessionID();
 	<section class="content">
 		<div class="nav-tabs-custom">
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="true">Sản phẩm</a></li>
-				<li class=""><a href="#tab_4" data-toggle="tab" aria-expanded="true">Vị trí</a></li>
-				<li class=""><a href="#tab_5" data-toggle="tab" aria-expanded="true">Thẻ tag</a></li>
-				<li class="red"><a href="#tab_2" data-toggle="tab" aria-expanded="false">Tài khoản</a></li>
+				<li class="active"><a href="#tab_product" data-toggle="tab" aria-expanded="true">Sản phẩm</a></li>
+				<li class=""><a href="#tab_des" data-toggle="tab" aria-expanded="true">Mô tả</a></li>
+				<li class=""><a href="#tab_location" data-toggle="tab" aria-expanded="true">Vị trí</a></li>
+				<li class=""><a href="#tab_tag" data-toggle="tab" aria-expanded="true">Thẻ tag</a></li>
+				<li class="red"><a href="#tab_account" data-toggle="tab" aria-expanded="false">Tài khoản</a></li>
 			</ul>
 			<div class="tab-content">
-				<div class="tab-pane active" id="tab_1">
+				<div class="tab-pane active" id="tab_product">
 					<div class="row">
-						<div class="col-md-3">
+						<div class="col-md-6">
 							<div class="box-body">
 								<div class="form-group">
 									<span class="label label-primary bd-r-0">Tiêu đề 1</span>
-									<textarea class="form-control min-h-title" rows="3" name="titles1" placeholder="" required><?php echo isset($inputs['titles1']) ? $inputs['titles1'] : ''; ?></textarea>
+									<textarea class="form-control min-h-title" rows="3" name="titles1" placeholder="" ><?php echo isset($inputs['titles1']) ? $inputs['titles1'] : ''; ?></textarea>
 									<div id="error__titles1">
 
 									</div>
@@ -136,35 +137,12 @@ $session = $driver->getSessionID();
 								</div>
 							</div>
 						</div>
-						<div class="col-md-3">
+						<div class="col-md-6">
 							<div class="box-body">
 								<div class="form-group">
 									<span class="label label-primary bd-r-0">Tiêu đề 2</span>
-									<textarea class="form-control min-h-title" rows="3" name="titles2" placeholder="" required><?php echo isset($inputs['titles2']) ? $inputs['titles2'] : ''; ?></textarea>
+									<textarea class="form-control min-h-title" rows="3" name="titles2" placeholder="" ><?php echo isset($inputs['titles2']) ? $inputs['titles2'] : ''; ?></textarea>
 									<div id="error__titles2">
-
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<div class="col-md-3">
-							<div class="box-body">
-								<div class="form-group">
-									<span class="label label-primary bd-r-0">Mô tả 1</span>
-									<textarea class="form-control min-h-title" rows="3" name="descriptions1" placeholder="" required><?php echo isset($inputs['descriptions1']) ? $inputs['descriptions1'] : ''; ?></textarea>
-									<div id="error__descriptions1">
-
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-3">
-							<div class="box-body">
-								<div class="form-group">
-									<span class="label label-primary bd-r-0">Mô tả 2</span>
-									<textarea class="form-control min-h-title" rows="3" name="descriptions2" placeholder="" required><?php echo isset($inputs['descriptions2']) ? $inputs['descriptions2'] : ''; ?></textarea>
-									<div id="error__descriptions2">
 
 									</div>
 								</div>
@@ -180,7 +158,7 @@ $session = $driver->getSessionID();
 									<div class="col-md-6">
 										<div class="form-group">
 											<span class="label label-primary bd-r-0">Giá</span>
-											<input type="number" class="form-control" name="price" min="0" max="100000000" placeholder="" required value="<?php echo isset($inputs['price']) ? $inputs['price'] : ''; ?>">
+											<input type="number" class="form-control" name="price" min="0" max="100000000" placeholder=""  value="<?php echo isset($inputs['price']) ? $inputs['price'] : ''; ?>">
 											<div id="error__price">
 
 											</div>
@@ -189,7 +167,7 @@ $session = $driver->getSessionID();
 									<div class="col-md-6">
 										<div class="form-group">
 											<span class="label label-primary bd-r-0">Hạng mục</span>
-											<select class="form-control" name="category" required>
+											<select class="form-control" name="category" >
 												<option value="0" <?php echo isset($inputs['category']) && $inputs['category'] == 0 ? 'selected' : ''; ?>>Công cụ</option>
 												<option value="1" <?php echo isset($inputs['category']) && $inputs['category'] == 1 ? 'selected' : ''; ?>>Nội thất</option>
 												<option value="2" <?php echo isset($inputs['category']) && $inputs['category'] == 2 ? 'selected' : ''; ?>>Hộ gia đình</option>
@@ -227,7 +205,7 @@ $session = $driver->getSessionID();
 									<div class="col-md-6">
 										<div class="form-group">
 											<span class="label label-primary bd-r-0">Thương hiệu</span>
-											<input type="text" class="form-control" name="brand" placeholder="" required value="<?php echo isset($inputs['brand']) ? $inputs['brand'] : ''; ?>">
+											<input type="text" class="form-control" name="brand" placeholder=""  value="<?php echo isset($inputs['brand']) ? $inputs['brand'] : ''; ?>">
 											<div id="error__brand">
 
 											</div>
@@ -236,7 +214,7 @@ $session = $driver->getSessionID();
 									<div class="col-md-6">
 										<div class="form-group">
 											<span class="label label-primary bd-r-0">Tình trạng</span>
-											<select class="form-control" name="condition" required>
+											<select class="form-control" name="condition" >
 												<option value="0" <?php echo isset($inputs['condition']) && $inputs['condition'] == 0 ? 'selected' : ''; ?>>Mới</option>
 												<option value="1" <?php echo isset($inputs['condition']) && $inputs['condition'] == 1 ? 'selected' : ''; ?>>Đã qua sử dụng - Như mới</option>
 												<option value="2" <?php echo isset($inputs['condition']) && $inputs['condition'] == 2 ? 'selected' : ''; ?>>Đã qua sử dụng - Tốt</option>
@@ -258,7 +236,7 @@ $session = $driver->getSessionID();
 									<div class="col-md-6">
 										<div class="form-group">
 											<span class="label label-primary bd-r-0">Số lượng ảnh một bài đăng</span>
-											<input type="number" class="form-control" name="number_image" min="1" max="100000000" placeholder="" required value="<?php echo isset($inputs['number_image']) ? $inputs['number_image'] : ''; ?>">
+											<input type="number" class="form-control" name="number_image" min="1" max="100000000" placeholder=""  value="<?php echo isset($inputs['number_image']) ? $inputs['number_image'] : ''; ?>">
 											<div id="error__number_image">
 
 											</div>
@@ -268,7 +246,7 @@ $session = $driver->getSessionID();
 										<div class="col-md-6">
 											<div class="form-group">
 												<span class="label label-primary bd-r-0">Delay Vị trí</span>
-												<input type="number" class="form-control" name="delay_location" min="0" max="100000000" placeholder="" required value="<?php echo isset($inputs['delay_location']) ? $inputs['delay_location'] : ''; ?>">
+												<input type="number" class="form-control" name="delay_location" min="0" max="100000000" placeholder=""  value="<?php echo isset($inputs['delay_location']) ? $inputs['delay_location'] : ''; ?>">
 												<div id="error__delay_account">
 
 												</div>
@@ -277,7 +255,7 @@ $session = $driver->getSessionID();
 										<div class="col-md-6">
 											<div class="form-group">
 												<span class="label label-primary bd-r-0">Delay Tài khoản</span>
-												<input type="number" class="form-control" name="delay_account" min="0" max="100000000" placeholder="" required value="<?php echo isset($inputs['delay_account']) ? $inputs['delay_account'] : ''; ?>">
+												<input type="number" class="form-control" name="delay_account" min="0" max="100000000" placeholder=""  value="<?php echo isset($inputs['delay_account']) ? $inputs['delay_account'] : ''; ?>">
 												<div id="error__delay_account">
 
 												</div>
@@ -289,7 +267,7 @@ $session = $driver->getSessionID();
 									<div class="col-md-12">
 										<div class="form-group">
 											<span class="label label-primary bd-r-0">Thư mục ảnh</span>
-											<input type="text" class="form-control" name="images" placeholder="" required value="<?php echo isset($inputs['images']) ? $inputs['images'] : ''; ?>">
+											<input type="text" class="form-control" name="images" placeholder=""  value="<?php echo isset($inputs['images']) ? $inputs['images'] : ''; ?>">
 											<div id="error__images">
 
 											</div>
@@ -302,11 +280,61 @@ $session = $driver->getSessionID();
 					</div>
 				</div>
 
-				<div class="tab-pane" id="tab_4">
+				<div class="tab-pane" id="tab_des">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="box-body des-body-1">
+								<?php if(isset($inputs['descriptions1']) && is_array($inputs['descriptions1'])){ ?>
+								<?php foreach($inputs['descriptions1'] as $key => $value){ ?>
+									<div class="form-group">
+										<span class="label label-primary bd-r-0">Mô tả 1</span>
+										<?php if($key != 0){ ?>
+										<a href="javascript:void(0)" class="remove-des"><span class="label label-warning bd-r-0">x</span></a>
+										<?php } ?>
+										<textarea class="form-control min-h-title descriptions1" name="descriptions1" rows="3" placeholder="" ><?php echo $value; ?></textarea>
+									</div>
+									<?php if($key == 0){ ?>
+									<div id="error__descriptions1">
+
+									</div>
+									<?php }?>
+								<?php } } ?>
+								
+							</div>
+							<div class="group-add">
+								<a href="javascript:void(0)" class="add-des-1"><span class="label label-primary bd-r-0">+</span></a>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="box-body des-body-2">
+								<?php if(isset($inputs['descriptions2']) && is_array($inputs['descriptions2'])){ ?>
+								<?php foreach($inputs['descriptions2'] as $key => $value){ ?>
+								<div class="form-group">
+									<span class="label label-primary bd-r-0">Mô tả 2</span>
+									<?php if($key != 0){ ?>
+									<a href="javascript:void(0)" class="remove-des"><span class="label label-warning bd-r-0">x</span></a>
+									<?php } ?>
+									<textarea class="form-control min-h-title descriptions2" name="descriptions2" rows="3" placeholder="" ><?php echo $value; ?></textarea>
+								</div>
+								<?php if($key == 0){ ?>
+								<div id="error__descriptions2">
+
+								</div>
+								<?php }?>
+							<?php } } ?>
+							</div>
+							<div class="group-add">
+								<a href="javascript:void(0)" class="add-des-2"><span class="label label-primary bd-r-0">+</span></a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="tab-pane" id="tab_location">
 					<div class="box-body">
 						<div class="form-group">
 							<span class="label label-primary bd-r-0">Mỗi dòng một vị trí</span>
-							<textarea class="form-control min-h-text" name="locations" rows="3" placeholder="" required><?php echo isset($inputs['locations']) ? $inputs['locations'] : ''; ?></textarea>
+							<textarea class="form-control min-h-text" name="locations" rows="3" placeholder="" ><?php echo isset($inputs['locations']) ? $inputs['locations'] : ''; ?></textarea>
 							<div id="error__locations">
 
 							</div>
@@ -314,11 +342,11 @@ $session = $driver->getSessionID();
 					</div>
 				</div>
 
-				<div class="tab-pane" id="tab_5">
+				<div class="tab-pane" id="tab_tag">
 					<div class="box-body">
 						<div class="form-group">
 							<span class="label label-primary bd-r-0">Mỗi dòng một tag (tối đa 20)</span>
-							<textarea class="form-control min-h-text" rows="3" name="tags" placeholder="" required><?php echo isset($inputs['tags']) ? $inputs['tags'] : ''; ?></textarea>
+							<textarea class="form-control min-h-text" rows="3" name="tags" placeholder="" ><?php echo isset($inputs['tags']) ? $inputs['tags'] : ''; ?></textarea>
 							<div id="error__tags">
 
 							</div>
@@ -326,13 +354,13 @@ $session = $driver->getSessionID();
 					</div>
 				</div>
 
-				<div class="tab-pane" id="tab_2">
+				<div class="tab-pane" id="tab_account">
 					<div class="box-body">
 						<div class="row">
 							<div class="col-md-5">
 								<div class="form-group">
 									<span class="label label-primary bd-r-0">Tài khoản / Mật khẩu</span>
-									<textarea class="form-control min-h-text" name="accounts" rows="3" placeholder="" required></textarea>
+									<textarea class="form-control min-h-text" name="accounts" rows="3" placeholder="" ></textarea>
 								</div>
 							</div>
 							<div class="col-md-2">
@@ -425,6 +453,32 @@ $session = $driver->getSessionID();
 		let delay_account = 0;
 		let number_image = 0;
 
+	</script>
+	<script type="text/javascript">
+		$( document ).ready(function() {
+			$(document).on("click", ".remove-des", function () {
+				$(this).parent().remove();
+			});
+			$(document).on("click", ".add-des-1", function () {
+				var str =	'<div class="form-group">'
+									+'<span class="label label-primary bd-r-0">Mô tả 1</span>'
+									+'<a href="javascript:void(0)" class="remove-des"><span class="label label-warning bd-r-0">x</span></a>'
+									+'<textarea class="form-control min-h-title descriptions1" name="descriptions1" rows="3" placeholder="" ></textarea>'
+								+'</div>';
+				$('.des-body-1').append(str);
+			});
+			$(document).on("click", ".add-des-2", function () {
+				var str =	'<div class="form-group">'
+									+'<span class="label label-primary bd-r-0">Mô tả 2</span>'
+									+'<a href="javascript:void(0)" class="remove-des"><span class="label label-warning bd-r-0">x</span></a>'
+									+'<textarea class="form-control min-h-title descriptions2" name="descriptions2" rows="3" placeholder="" ></textarea>'
+									+'<div id="error__descriptions2[]">'
+
+									+'</div>'
+								+'</div>';
+				$('.des-body-2').append(str);
+			});
+		});
 	</script>
 	<script type="text/javascript">
 		$( document ).ready(function() {
@@ -568,8 +622,6 @@ $session = $driver->getSessionID();
 		{
 			var titles1 = $('form#form-input :input[name="titles1"]').val();
 			var titles2 = $('form#form-input :input[name="titles2"]').val();
-			var descriptions1 = $('form#form-input :input[name="descriptions1"]').val();
-			var descriptions2 = $('form#form-input :input[name="descriptions2"]').val();
 			var price = $('form#form-input :input[name="price"]').val();
 			var category = $('form#form-input :input[name="category"]').val();
 			var condition = $('form#form-input :input[name="condition"]').val();
@@ -580,6 +632,20 @@ $session = $driver->getSessionID();
 			var images = $('form#form-input :input[name="images"]').val();
 			var tags = $('form#form-input :input[name="tags"]').val();
 			var locations = $('form#form-input :input[name="locations"]').val();
+			let descriptions1 = [];
+			$('form#form-input :input[name="descriptions1"]').each(function(){
+				if($(this).val() != '')
+				{
+					descriptions1.push($(this).val());
+				}
+			});
+			let descriptions2 = [];
+			$('form#form-input :input[name="descriptions2"]').each(function(){
+				if($(this).val() != '')
+				{
+					descriptions2.push($(this).val());
+				}
+			});
 
 			var inputs = {titles1: titles1, titles2: titles2, descriptions1: descriptions1, descriptions2: descriptions2, price: price, category: category, condition: condition, brand: brand, number_image: number_image, delay_location: delay_location, delay_account: delay_account, images: images, tags: tags, locations: locations};
 
@@ -605,8 +671,6 @@ $session = $driver->getSessionID();
 			let session = $('input[name="session"]').val();
 			var titles1 = $('form#form-input :input[name="titles1"]').val();
 			var titles2 = $('form#form-input :input[name="titles2"]').val();
-			var descriptions1 = $('form#form-input :input[name="descriptions1"]').val();
-			var descriptions2 = $('form#form-input :input[name="descriptions2"]').val();
 			var price = $('form#form-input :input[name="price"]').val();
 			var category = $('form#form-input :input[name="category"]').val();
 			var condition = $('form#form-input :input[name="condition"]').val();
@@ -614,8 +678,20 @@ $session = $driver->getSessionID();
 			var tags = $('form#form-input :input[name="tags"]').val();
 			titles1 = multipleLinesToArray(titles1);
 			titles2 = multipleLinesToArray(titles2);
-			descriptions1 = multipleLinesToArray(descriptions1);
-			descriptions2 = multipleLinesToArray(descriptions2);
+			let descriptions1 = [];
+			$('form#form-input :input[name="descriptions1"]').each(function(){
+				if($(this).val() != '')
+				{
+					descriptions1.push($(this).val());
+				}
+			});
+			let descriptions2 = [];
+			$('form#form-input :input[name="descriptions2"]').each(function(){
+				if($(this).val() != '')
+				{
+					descriptions2.push($(this).val());
+				}
+			});
 			tags = multipleLinesToArray(tags);
 			return {session: session,titles1: titles1, titles2: titles2, price: price, category: category, condition: condition, brand: brand, location: null, images: null, number_image: number_image, descriptions1: descriptions1, descriptions2: descriptions2, tags: tags, email: null};
 		}
@@ -772,6 +848,48 @@ $session = $driver->getSessionID();
 	            this.element(element);
 	        },
 	        rules: {
+	        	titles1: {
+	        		required: true
+	        	},
+	        	titles2: {
+	        		required: true
+	        	},
+	        	price: {
+	        		required: true
+	        	},
+	        	category: {
+	        		required: true
+	        	},
+	        	brand: {
+	        		required: true
+	        	},
+	        	condition: {
+	        		required: true
+	        	},
+	        	number_image: {
+	        		required: true
+	        	},
+	        	delay_location: {
+	        		required: true
+	        	},
+	        	delay_account: {
+	        		required: true
+	        	},
+	        	images: {
+	        		required: true
+	        	},
+	        	descriptions1: {
+	        		required: true
+	        	},
+	        	descriptions2: {
+	        		required: true
+	        	},
+	        	locations: {
+	        		required: true
+	        	},
+	        	tags: {
+	        		required: true
+	        	},
 	        	accounts: {
 	        		required: false
 	        	},

@@ -136,3 +136,12 @@
     color: red;
     text-decoration: underline;
 }
+
+.remove-des {
+    float: right;
+}
+
+.group-add {
+    text-align: right;
+    padding-right: 10px;
+}
