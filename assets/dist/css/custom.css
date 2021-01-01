@@ -145,3 +145,7 @@
     text-align: right;
     padding-right: 10px;
 }
+
+.min-h-text-180 {
+    min-height: 180px !important;
+}

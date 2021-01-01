@@ -264,7 +264,7 @@ $session = $driver->getSessionID();
 									</div>
 								</div>
 								<div class="row">
-									<div class="col-md-12">
+									<div class="col-md-6">
 										<div class="form-group">
 											<span class="label label-primary bd-r-0">Thư mục ảnh</span>
 											<input type="text" class="form-control" name="images" placeholder=""  value="<?php echo isset($inputs['images']) ? $inputs['images'] : ''; ?>">
@@ -273,6 +273,15 @@ $session = $driver->getSessionID();
 											</div>
 										</div>
 									</div>
+									<div class="col-md-6">
+											<div class="form-group">
+												<span class="label label-primary bd-r-0">Số tài khoản 1 vị trí</span>
+												<input type="number" class="form-control" name="number_account" min="1" max="100000000" placeholder=""  value="<?php echo isset($inputs['number_account']) ? $inputs['number_account'] : ''; ?>">
+												<div id="error__number_account">
+
+												</div>
+											</div>
+										</div>
 								</div>
 							</div>
 						</div>
@@ -332,12 +341,26 @@ $session = $driver->getSessionID();
 
 				<div class="tab-pane" id="tab_location">
 					<div class="box-body">
-						<div class="form-group">
-							<span class="label label-primary bd-r-0">Mỗi dòng một vị trí</span>
-							<textarea class="form-control min-h-text" name="locations" rows="3" placeholder="" ><?php echo isset($inputs['locations']) ? $inputs['locations'] : ''; ?></textarea>
-							<div id="error__locations">
+						<div class="row location-body">
+							<?php if(isset($inputs['locations']) && is_array($inputs['locations'])){ ?>
+							<?php foreach($inputs['locations'] as $key => $value){ ?>
+							<div class="col-md-6 form-group">
+								<span class="label label-primary bd-r-0">Mỗi dòng một vị trí</span>
+								<?php if($key != 0){ ?>
+								<a href="javascript:void(0)" class="remove-des"><span class="label label-warning bd-r-0">x</span></a>
+								<?php } ?>
+								<textarea class="form-control min-h-text-180" name="locations" rows="3" placeholder="" ><?php echo $value; ?></textarea>
+								<?php if($key == 0){ ?>
+								<div id="error__locations">
 
+								</div>
+								<?php }?>
 							</div>
+							<?php } } ?>
+						</div>
+						
+						<div class="group-add">
+							<a href="javascript:void(0)" class="add-location"><span class="label label-primary bd-r-0">+</span></a>
 						</div>
 					</div>
 				</div>
@@ -452,6 +475,7 @@ $session = $driver->getSessionID();
 		let delay_location = 0;
 		let delay_account = 0;
 		let number_image = 0;
+		let number_account = 0;
 
 	</script>
 	<script type="text/javascript">
@@ -477,6 +501,15 @@ $session = $driver->getSessionID();
 									+'</div>'
 								+'</div>';
 				$('.des-body-2').append(str);
+			});
+
+			$(document).on("click", ".add-location", function () {
+				var str =	'<div class="col-md-6 form-group">'
+								+'<span class="label label-primary bd-r-0">Mỗi dòng một vị trí</span>'
+								+'<a href="javascript:void(0)" class="remove-des"><span class="label label-warning bd-r-0">x</span></a>'
+								+'<textarea class="form-control min-h-text-180" name="locations" rows="3" placeholder="" ></textarea>'
+							+'</div>';
+				$('.location-body').append(str);
 			});
 		});
 	</script>
@@ -627,11 +660,11 @@ $session = $driver->getSessionID();
 			var condition = $('form#form-input :input[name="condition"]').val();
 			var brand = $('form#form-input :input[name="brand"]').val();
 			var number_image = $('form#form-input :input[name="number_image"]').val();
+			var number_account = $('form#form-input :input[name="number_account"]').val();
 			var delay_location = $('form#form-input :input[name="delay_location"]').val();
 			var delay_account = $('form#form-input :input[name="delay_account"]').val();
 			var images = $('form#form-input :input[name="images"]').val();
 			var tags = $('form#form-input :input[name="tags"]').val();
-			var locations = $('form#form-input :input[name="locations"]').val();
 			let descriptions1 = [];
 			$('form#form-input :input[name="descriptions1"]').each(function(){
 				if($(this).val() != '')
@@ -646,8 +679,15 @@ $session = $driver->getSessionID();
 					descriptions2.push($(this).val());
 				}
 			});
+			let locations = [];
+			$('form#form-input :input[name="locations"]').each(function(){
+				if($(this).val() != '')
+				{
+					locations.push($(this).val());
+				}
+			});
 
-			var inputs = {titles1: titles1, titles2: titles2, descriptions1: descriptions1, descriptions2: descriptions2, price: price, category: category, condition: condition, brand: brand, number_image: number_image, delay_location: delay_location, delay_account: delay_account, images: images, tags: tags, locations: locations};
+			var inputs = {titles1: titles1, titles2: titles2, descriptions1: descriptions1, descriptions2: descriptions2, price: price, category: category, condition: condition, brand: brand, number_image: number_image, number_account: number_account, delay_location: delay_location, delay_account: delay_account, images: images, tags: tags, locations: locations};
 
 			return $.ajax({
 	            type: "post",
@@ -692,6 +732,7 @@ $session = $driver->getSessionID();
 					descriptions2.push($(this).val());
 				}
 			});
+			
 			tags = multipleLinesToArray(tags);
 			return {session: session,titles1: titles1, titles2: titles2, price: price, category: category, condition: condition, brand: brand, location: null, images: null, number_image: number_image, descriptions1: descriptions1, descriptions2: descriptions2, tags: tags, email: null};
 		}
@@ -707,19 +748,64 @@ $session = $driver->getSessionID();
 			let path = $('form#form-input :input[name="images"]').val();
 			let images = await getAllfile(path);
 			images = sortImages(images, path);
-			for(let x = 0; x < locations.length; x++)
+
+			let x = 0;
+			let flag_x = true;
+			while(flag_x)
 			{
-				await sleep(delay_location*1000);
-				inputs.location = locations[x];
-				let imgs_tmp = randomImages(images);
-				if(imgs_tmp.length == 0)
+				if(locations[x].length != 0)
 				{
-					break;	
+					await sleep(delay_location*1000);
+					inputs.location = locations[x][0];
+					let imgs_tmp = randomImages(images);
+					let accounts_tmp = getAccount(accounts, x);
+					if(imgs_tmp.length == 0)
+					{
+						break;
+					}
+					inputs.images = imgs_tmp;
+					await foreachAccount(inputs, accounts_tmp);
+					locations[x].remove(locations[x][0]);
 				}
-				inputs.images = imgs_tmp;
-				await foreachAccount(inputs, accounts);
+				if(x == (locations.length - 1) && !checkArray(locations))
+				{
+					flag_x = false;
+				}
+				x++;
+				if(x == locations.length)
+				{
+					x = 0;
+				}
 			}
 			afterProcess();
+		}
+
+		function checkArray(locations)
+		{
+			for(let i = 0; i < locations.length; i++)
+			{
+				if(locations[i].length > 0)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		function getAccount(accounts, x)
+		{
+			let result = [];
+			x = x+1;
+			let start = (x-1)*number_account;
+			let end = start + (number_account - 1);
+			for(let i = start; i <= end; i++)
+			{
+				if(typeof accounts[i] !== 'undefined')
+				{
+					result.push(accounts[i]);
+				}
+			}
+			return result;
 		}
 
 		function beforeProcess()
@@ -907,11 +993,18 @@ $session = $driver->getSessionID();
 		        delay_location = $('input[name="delay_location"]').val();
 		        delay_account = $('input[name="delay_account"]').val();
 		        number_image = $('input[name="number_image"]').val();
+		        number_account = $('input[name="number_account"]').val();
 
 		    	let inputs = getInput();
 		    	let accounts = $('.list-group').children();
-		    	let locations = $('form#form-input :input[name="locations"]').val();
-		    	locations =  multipleLinesToArray(locations);
+
+		    	let locations = [];
+				$('form#form-input :input[name="locations"]').each(function(){
+					if($(this).val() != '')
+					{
+						locations.push(multipleLinesToArray($(this).val()));
+					}
+				});
 		    	foreachLocation(inputs, accounts, locations);
 	        }
 	    });
