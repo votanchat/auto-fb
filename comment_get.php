@@ -16,6 +16,7 @@ $response['message'][] = [
 	'status' => 'success',
 	'msg' => $email.' - Bắt đầu lấy danh sách bái đã đăng'
 ];
+$response['data'] = [];
 $cookies = [];
 $driver->manage()->deleteAllCookies();
 $driver->get('https://m.facebook.com');
@@ -49,7 +50,6 @@ try {
 }
 
 //get data
-$response['data'] = [];
 $file_name = 'db_post/'.$email.'.txt';
 if(file_exists($file_name))
 {
