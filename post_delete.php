@@ -79,8 +79,8 @@ foreach($items as $key => $item)
 				'msg' => $email.' - Không tìm thấy Quản lý mặt hàng'
 			];
 		}
+		sleep(2);
 	}
-	sleep(2);
 }
 
 // reload data
