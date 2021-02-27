@@ -327,7 +327,7 @@ try {
 		'status' => 'fail',
 		'msg' => $input_values['email'].' - '.$input_values['location'].' - Không thể đăng bài vì thiếu nội dung nào đó'
 	];
-	endSession($response, $driver, $input_values['email']);
+	endSession($response, $input_values['email']);
 }
 
 
